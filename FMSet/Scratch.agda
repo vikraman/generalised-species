@@ -219,3 +219,6 @@ code (x ∷ xs) (comm a b as bs cs p q i) = {!!}
 code (x ∷ xs) (trunc ys zs p q i j) = {!!}
 code (comm a b as bs cs p q i) ys = {!!}
 code (trunc xs zs p q i j) ys = {!!}
+
+test : FMSet A
+test = []
