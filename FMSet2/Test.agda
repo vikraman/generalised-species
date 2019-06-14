@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K #-}
 
-module FMSet.Test where
+module FMSet2.Test where
 
 infixr 20 _∷_
 

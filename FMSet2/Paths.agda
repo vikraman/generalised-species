@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical #-}
 
-module FMSet.Paths where
+module FMSet2.Paths where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
@@ -10,8 +10,8 @@ open import Cubical.Data.Empty
 open import Cubical.Data.Unit
 open import Cubical.Data.Nat
 
-open import FMSet
-open import FMSet.Properties
+open import FMSet2
+open import FMSet2.Universal
 
 private
   variable
@@ -126,16 +126,16 @@ lenZero-out = FMSetElimProp.f
 test : ∀ {X : Type₀} {x y : X} → Path (⊥ → X) (λ _ → x) (λ _ → y)
 test = funExt (λ x → ⊥-elim x)
 
-test2 : ∀ (x y : A) xs i → (1 ≡ length (comm x y xs i)) → ⊥
+test2 : ∀ (x y : A) xs i → (1 ≡ length (FMSet.swap x y xs i)) → ⊥
 test2 x y xs i p = znots (injSuc p)
 
-test3 : ∀ (x y : A) xs i → (1 ≡ length (comm x y xs i)) ≡ ⊥
+test3 : ∀ (x y : A) xs i → (1 ≡ length (FMSet.swap x y xs i)) ≡ ⊥
 test3 x y xs i = {!!}
 
 test4 : ∀ {X : Type₀} {x y : X} {P : I → Type₀} (p : ∀ i → P i → ⊥) → PathP (λ i → P i → X) (λ q → x) (λ q → y)
 test4 {X} {x} {y} {P} p = toPathP {!!}
 
-test5 : ∀ (x y : A) xs (X : Type₀) (z w : X) → PathP (λ i → 1 ≡ length (comm x y xs i) → X) (λ p → z) (λ p → w)
+test5 : ∀ (x y : A) xs (X : Type₀) (z w : X) → PathP (λ i → 1 ≡ length (FMSet.swap x y xs i) → X) (λ p → z) (λ p → w)
 test5 x y xs Z z w = {!!}
 
 -- PathP
@@ -250,11 +250,11 @@ module Paths (ASet : isSet A) where
   code : (as bs : FMSet A) → hProp {ℓ-zero}
   code [] bs = (bs ≡ []) , (trunc bs [])
   code (a ∷ as) [] = hProp.⊥
-  code (a ∷ as) FMSet.[ b ] = f a as b
+  code (a ∷ as) [ b ] = f a as b
   code (a ∷ as) (b₁ ∷ b₂ ∷ bs) = {!!}
-  code (a ∷ as) (b ∷ comm b₁ b₂ bs i) = {!!}
+  code (a ∷ as) (b ∷ swap b₁ b₂ bs i) = {!!}
   code (a ∷ as) (b ∷ trunc bs cs p q i j) = {!!}
-  code (a ∷ as) (comm b₁ b₂ bs i) = {!!}
+  code (a ∷ as) (swap b₁ b₂ bs i) = {!!}
   code (a ∷ as) (trunc bs cs p q i j) = {!!}
-  code (comm a₁ a₂ as i) bs = {!!}
+  code (swap a₁ a₂ as i) bs = {!!}
   code (trunc as cs p q i j) bs = {!!}
