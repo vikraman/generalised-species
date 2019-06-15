@@ -7,11 +7,6 @@ open import Cubical.Foundations.Everything
 
 open import FMSet
 
-private
-  variable
-    ℓ : Level
-    A : Type₀
-
 infixr 30 _++_
 
 _++_ : ∀ (xs ys : FMSet A) → FMSet A

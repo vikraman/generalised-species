@@ -8,15 +8,11 @@ open import Cubical.Foundations.Everything
 open import FMSet
 open import FMSet.Universal
 
-private
-  variable
-    ℓ : Level
-    A : Type₀
-
 open import Cubical.Data.Nat
 
 length : FMSet A → ℕ
-length = FMSetRec.f isSetℕ 0 (λ _ → suc) λ a b bas bbs bcs bp bq → cong suc (bp ∙ bq)
+length = FMSetRec.f isSetℕ 0 (λ _ → suc)
+  λ a b bas bbs bcs bp bq → cong suc (bp ∙ bq)
 
 singSet : Type₀ → Type₀
 singSet A = Σ (FMSet A) (λ xs → 1 ≡ length xs)
