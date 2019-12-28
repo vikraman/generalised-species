@@ -32,8 +32,8 @@ map-∘ g f = funExt (FMSetElimProp.f (trunc _ _) refl λ x p → cong (g (f x) 
 tr-left : {B : Type₀} → μ ∘ map η ≡ idfun (M B)
 tr-left = funExt (FMSetElimProp.f (trunc _ _) refl λ x p → cong (x ∷_) p)
 
-tr-right : {B : Type₀} → μ ∘ η {M B} ≡ idfun (M B)
+tr-right : {B : Type₀} → μ ∘ η {A = M B} ≡ idfun (M B)
 tr-right = funExt unitr-++
 
-sq : {B : Type₀} → μ {B} ∘ map μ ≡ μ ∘ μ
+sq : {B : Type₀} → μ {A = B} ∘ map μ ≡ μ ∘ μ
 sq = funExt (FMSetElimProp.f (trunc _ _) refl λ x p → {!!})

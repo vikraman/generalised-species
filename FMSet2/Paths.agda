@@ -22,7 +22,7 @@ private
 
 disj-nil-cons : x ∷ xs ≡ [] → ⊥
 disj-nil-cons p = transport (λ i → fst (code (p i))) tt
-  where code : FMSet A → hProp
+  where code : FMSet A → hProp ℓ-zero
         code = FMSetRec.f isSetHProp
           (⊥ , isProp⊥)
           (λ _ _ → Unit , isPropUnit)
@@ -160,7 +160,7 @@ module _ {ASet : isSet A} where
 
   infixr 15 _∈_
 
-  _∈_ : A → FMSet A → hProp {ℓ-zero}
+  _∈_ : A → FMSet A → hProp ℓ-zero
   _∈_ x = FMSetElim.f (⊥ , isProp⊥)
     (λ y {ys} p → FMSetRec.f isSetHProp ((x ≡ y) , ASet x y) (λ _ p → p) (λ _ _ _ → refl) ys)
     (λ x y {xs} b → {!!})
@@ -224,7 +224,7 @@ open hProp
 
 module PathsCons where
 
-  code : (ASet : isSet A) (a b : A) (as bs : FMSet A) → hProp {ℓ-zero}
+  code : (ASet : isSet A) (a b : A) (as bs : FMSet A) → hProp ℓ-zero
   code ASet a b as = FMSetElim.f
     (((a ≡ b) , (ASet a b)) ⊓ ((as ≡ []) , trunc as []))
     (λ c {bs} ϕ → (((a ≡ b) , ASet a b) ⊓ ((as ≡ c ∷ bs) , trunc as (c ∷ bs)))
@@ -238,16 +238,16 @@ module Paths (ASet : isSet A) where
 
   module _ (a : A) (as : FMSet A) where
 
-    f : (b : A) → hProp {ℓ-zero}
+    f : (b : A) → hProp ℓ-zero
     f b = ((a ≡ b) , ASet a b) ⊓ ((as ≡ []) , (trunc as []))
 
-    g : A → A → FMSet A → hProp {ℓ-zero}
+    g : A → A → FMSet A → hProp ℓ-zero
     g b₁ b₂ bs = (((a ≡ b₁) , (ASet a b₁)) ⊓ ((as ≡ b₂ ∷ bs) , trunc as (b₂ ∷ bs)))
                ⊔ (((a ≡ b₂) , (ASet a b₂)) ⊓ ((as ≡ b₁ ∷ bs) , trunc as (b₁ ∷ bs)))
                ⊔ (∃[ cs ] ((as ≡ b₁ ∷ b₂ ∷ cs) , trunc as (b₁ ∷ b₂ ∷ cs))
                         ⊓ ((bs ≡ a ∷ cs) , trunc bs (a ∷ cs)))
 
-  code : (as bs : FMSet A) → hProp {ℓ-zero}
+  code : (as bs : FMSet A) → hProp ℓ-zero
   code [] bs = (bs ≡ []) , (trunc bs [])
   code (a ∷ as) [] = hProp.⊥
   code (a ∷ as) [ b ] = f a as b
