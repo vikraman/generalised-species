@@ -39,23 +39,21 @@ assoc-⊗ = FMGpdElimSet.f (λ _ → isSetPi λ _ → isSetPi λ _ → trunc _ _
 cons-⊗ : ∀ (x : A) (xs : FMGpd A) → x ∷ xs ≡ xs ⊗ [ x ]
 cons-⊗ x = FMGpdElimSet.f (λ _ → trunc _ _)
   refl
-  (λ y {xs} p i → hfill (λ j → λ { (i = i0) → x ∷ y ∷ xs
-                                 ; (i = i1) → y ∷ p j  })
-                  (inS (swap x y xs i)) i1
+  (λ y {xs} p i → hcomp (λ j → λ { (i = i0) → x ∷ y ∷ xs
+                                 ; (i = i1) → y ∷ p j })
+                        (swap x y xs i)
   -- swap x y xs ∙ cong (y ∷_) p
   )
   (λ a b {as bs cs} bas bbs bcs {p} bp {q} bq i →
-    x ∷ comm a b as bs cs p q i
-  ≡[ j ]⟨ {!!} ⟩
-    comm a b (x ∷ as) (x ∷ bs) (x ∷ cs) (cong (x ∷_) p ∙ swap x b cs) (swap a x cs ∙ cong (x ∷_) q) i
-  ≡[ j ]⟨ comm a b (x ∷ as) (x ∷ bs) (x ∷ cs) {!!} {!!} {!!} ⟩
-    comm a b (as ⊗ [ x ]) (bs ⊗ [ x ]) (cs ⊗ [ x ]) (λ k → p k ⊗ [ x ]) (λ k → q k ⊗ [ x ]) i
-  ∎
-    -- ≡⟨ {!!} ⟩
-    --   {!!}
-    -- ≡⟨ {!!} ⟩
-    --   {!!}
-    -- ∎
+    let bpi : x ∷ p i ≡ p i ⊗ [ x ] ; bpi = bp i
+        bqi = bq i
+    in {!!}
+  --   x ∷ comm a b as bs cs p q i
+  -- ≡[ j ]⟨ {!!} ⟩
+  --   comm a b (x ∷ as) (x ∷ bs) (x ∷ cs) (cong (x ∷_) p ∙ swap x b cs) (swap a x cs ∙ cong (x ∷_) q) i
+  -- ≡[ j ]⟨ comm a b (x ∷ as) (x ∷ bs) (x ∷ cs) {!!} {!!} {!!} ⟩
+  --   comm a b (as ⊗ [ x ]) (bs ⊗ [ x ]) (cs ⊗ [ x ]) (λ k → p k ⊗ [ x ]) (λ k → q k ⊗ [ x ]) i
+  -- ∎
     -- hfill (λ j → λ { (i = i0) → swap x a as ∙ cong (a ∷_) bas
     --                ; (i = i1) → swap x b bs ∙ cong (b ∷_) bbs })
     --       (inS {!!}) i1
@@ -72,7 +70,7 @@ comm-⊗ = FMGpdElimSet.f (λ _ → isSetPi (λ _ → trunc _ _))
                  ∙ cong (_⊗ xs) (cons-⊗ x ys)
                  ∙ sym (assoc-⊗ ys [ x ] xs))
   (λ a b {as bs cs} bas bbs bcs {p} bp {q} bq i →
-    {!!}
+     {!!}
     -- comm a b (bas ys j) (bbs ys j) (bcs ys j) {!!} {!!} {!!}
   )
 

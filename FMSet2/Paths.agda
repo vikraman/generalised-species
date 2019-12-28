@@ -231,7 +231,7 @@ module PathsCons where
                 ⊔ (((a ≡ c) , ASet a c) ⊓ ((as ≡ b ∷ bs) , trunc as (b ∷ bs)))
                 ⊔ (∃[ cs ] ((as ≡ b ∷ c ∷ cs) , trunc as (b ∷ c ∷ cs))
                          ⊓ ((bs ≡ a ∷ cs) , trunc bs (a ∷ cs))))
-    {!!}
+    (λ x y _ → {!!})
     (λ _ → isSetHProp)
 
 module Paths (ASet : isSet A) where
@@ -251,10 +251,10 @@ module Paths (ASet : isSet A) where
   code [] bs = (bs ≡ []) , (trunc bs [])
   code (a ∷ as) [] = hProp.⊥
   code (a ∷ as) [ b ] = f a as b
-  code (a ∷ as) (b₁ ∷ b₂ ∷ bs) = {!!}
-  code (a ∷ as) (b ∷ swap b₁ b₂ bs i) = {!!}
+  code (a ∷ as) (b₁ ∷ b₂ ∷ bs) = hProp.⊥
+  code (a ∷ as) (b ∷ swap b₁ b₂ bs i) = hProp.⊥
   code (a ∷ as) (b ∷ trunc bs cs p q i j) = {!!}
-  code (a ∷ as) (swap b₁ b₂ bs i) = {!!}
+  code (a ∷ as) (swap b₁ b₂ bs i) = hProp.⊥
   code (a ∷ as) (trunc bs cs p q i j) = {!!}
   code (swap a₁ a₂ as i) bs = {!!}
   code (trunc as cs p q i j) bs = {!!}

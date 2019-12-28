@@ -34,17 +34,60 @@ assoc-++ = FMSetElimProp.f (propPi (λ _ → propPi (λ _ → trunc _ _)))
   (λ ys zs → refl)
   (λ x p ys zs → cong (_∷_ x) (p ys zs))
 
+■ : (xs ys zs : FMSet A) → xs ≡ ys → ys ≡ zs → xs ≡ zs
+■ xs ys zs p q i = hcomp (λ j → λ { (i = i0) → xs ; (i = i1) → q j }) (p i)
+
+-- x ∷ y ∷ xs ----> y ∷ (xs ++ [ x ])
+--     |                |
+--     |                | y ∷ p j
+--     V                V
+-- x ∷ y ∷ xs ----> y ∷ x ∷ xs
+--         swap x y xs i
+
 cons-++ : ∀ (x : A) (xs : FMSet A) → x ∷ xs ≡ xs ++ [ x ]
 cons-++ x = FMSetElimProp.f (trunc _ _)
   refl
-  (λ y {xs} p → swap x y xs ∙ cong (_∷_ y) p)
+  (λ y {xs} p i → hcomp (λ j → λ { (i = i0) → x ∷ y ∷ xs
+                                 ; (i = i1) → y ∷ p j })
+                        (swap x y xs i))
+
+-- [] ++ ys = ys ----> ys ++ []
+
+-- x ∷ (xs ++ ys) ----> ys ++ (x ∷ xs)
+--      |                    |
+--      |                    |
+--      |                    V
+--      |               ys ++ (xs ++ [ x ])
+--      |                    |
+--      |                    |
+--      V                    V
+-- x ∷ (ys ++ xs) ----> (ys ++ xs) ++ [ x ]
+
+-- right : ∀ (ys : FMSet A) (x : A) (xs : FMSet A) → ys ++ (x ∷ xs) ≡ (ys ++ xs) ++ [ x ]
+-- right ys x xs j = hcomp (λ k → λ { (j = i0) → ys ++ (x ∷ xs) ; (j = i1) → assoc-++ ys xs [ x ] k }) (ys ++ (cons-++ x xs j))
 
 comm-++ : ∀ (xs ys : FMSet A) → xs ++ ys ≡ ys ++ xs
 comm-++ = FMSetElimProp.f (propPi (λ _ → trunc _ _))
-  (λ ys → sym (unitr-++ ys))
-  (λ x {xs} p ys → cong (x ∷_) (p ys)
-                 ∙ cong (_++ xs) (cons-++ x ys)
-                 ∙ sym (assoc-++ ys [ x ] xs))
+  (λ ys i → unitr-++ ys (~ i))
+  (λ x {xs} p ys i → hcomp (λ j → λ { (i = i0) → x ∷ p ys (~ j)
+                                    ; (i = i1) → hcomp (λ k → λ { (j = i0) → assoc-++ ys xs [ x ] k
+                                                                ; (j = i1) → ys ++ (x ∷ xs)
+                                                                })
+                                                       (ys ++ (cons-++ x xs (~ j)))
+                                    })
+                           (cons-++ x (ys ++ xs) i)
+    -- hcomp (λ j → λ { (i = i0) → (x ∷ xs ++ ys)
+    --                ; (i = i1) →
+    --                  hcomp (λ k → λ { (j = i0) → (x ∷ ys ++ xs)
+    --                                 ; (j = i1) → assoc-++ ys [ x ] xs (~ k) })
+    --                        (cons-++ x ys j ++ xs) })
+    --       (x ∷ p ys i)
+          )
+
+                 -- cong (x ∷_) (p ys)
+                 -- ∙ cong (_++ xs) (cons-++ x ys)
+                 -- ∙ sym (assoc-++ ys [ x ] xs)
+
 
 open import CMon
 
@@ -64,7 +107,9 @@ module FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
 
   f♯ : FMSet A → M
   f♯ = FMSetRec.f MSet e (λ x m → f x ⊗ m)
-         (λ x y m → comm-⊗ (f x) (f y ⊗ m) ∙ sym (assoc-⊗ (f y) m (f x)) ∙ cong (f y ⊗_) (comm-⊗ m (f x)))
+         (λ x y m i → hcomp (λ j → λ { (i = i0) → assoc-⊗ (f x) (f y) m (~ j)
+                                     ; (i = i1) → assoc-⊗ (f y) (f x) m (~ j) })
+                            (comm-⊗ (f x) (f y) i ⊗ m))
 
   f♯-nil : f♯ [] ≡ e
   f♯-nil = refl
@@ -78,7 +123,11 @@ module FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
   f♯-++ : ∀ xs ys → f♯ (xs ++ ys) ≡ f♯ xs ⊗ f♯ ys
   f♯-++ = FMSetElimProp.f (propPi λ _ → MSet _ _)
     (λ ys → sym (unit-⊗ (f♯ ys)))
-    (λ x {xs} p ys → cong (f x ⊗_) (p ys) ∙ assoc-⊗ (f x) (f♯ xs) (f♯ ys))
+    (λ x {xs} p ys i → hcomp (λ j → λ { (i = i0) → f x ⊗ p ys (~ j)
+                                      ; (i = i1) → (f x ⊗ f♯ xs) ⊗ f♯ ys })
+                             (assoc-⊗ (f x) (f♯ xs) (f♯ ys) i)
+      -- cong (f x ⊗_) (p ys) ∙ assoc-⊗ (f x) (f♯ xs) (f♯ ys)
+    )
 
   module _ (h : FMSet A → M) (h-nil : h [] ≡ e) (h-sing : ∀ x → h [ x ] ≡ f x)
            (h-++ : ∀ xs ys → h (xs ++ ys) ≡ h xs ⊗ h ys) where

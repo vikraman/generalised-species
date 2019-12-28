@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --safe #-}
+{-# OPTIONS --cubical --type-in-type #-}
 
 module FMSet.Properties where
 
@@ -17,13 +17,13 @@ length = FMSetRec.f isSetℕ 0 (λ _ → suc)
 singSet : Type₀ → Type₀
 singSet A = Σ (FMSet A) (λ xs → 1 ≡ length xs)
 
-is-sing-pred : FMSet A → A → Type₀
+is-sing-pred : FMSet A → A → Type _
 is-sing-pred xs z = [ z ] ≡ xs
 
 is-sing-pred-prop : (xs : FMSet A) (z : A) → isProp (is-sing-pred xs z)
 is-sing-pred-prop xs z = trunc [ z ] xs
 
-is-sing : FMSet A → Type₀
+is-sing : FMSet A → Type _
 is-sing xs = Σ _ (is-sing-pred xs)
 
 is-sing-prop : (xs : FMSet A) → isProp (is-sing xs)
@@ -51,14 +51,14 @@ lenOne-out = FMSetElim.f
 
 open import Cubical.Foundations.Logic
 
-code : FMSet A → FMSet A → hProp
-code [] [] = ⊤
-code [] (y ∷ ys) = ⊥
-code [] (comm a b as bs cs p q i) = ⊥
-code [] (trunc ys zs p q i j) = {!!}
-code (x ∷ xs) [] = ⊥
-code (x ∷ xs) (y ∷ ys) = {!!}
-code (x ∷ xs) (comm a b as bs cs p q i) = {!!}
-code (x ∷ xs) (trunc ys zs p q i j) = {!!}
-code (comm a b as bs cs p q i) ys = {!!}
-code (trunc xs zs p q i j) ys = {!!}
+code : (ASet : isSet A) (as bs : FMSet A) → hProp {ℓ-zero}
+code ASet [] [] = ⊤
+code ASet [] (y ∷ ys) = ⊥
+code ASet [] (comm a b as bs cs p q i) = ⊥
+code ASet [] (trunc ys zs p q i j) = {!!}
+code ASet (x ∷ xs) [] = ⊥
+code ASet (x ∷ xs) (y ∷ ys) = ((x ≡ y) , ASet x y) ⊔ {!!}
+code ASet (x ∷ xs) (comm a b as bs cs p q i) = {!!}
+code ASet (x ∷ xs) (trunc ys zs p q i j) = {!!}
+code ASet (comm a b as bs cs p q i) ys = {!!}
+code ASet (trunc xs zs p q i j) ys = {!!}
