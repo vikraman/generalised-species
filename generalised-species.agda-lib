@@ -1,0 +1,4 @@
+name: generalised-species
+include: .
+depend:
+  cubical
