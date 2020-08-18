@@ -1,11 +1,11 @@
 {-# OPTIONS --cubical --safe #-}
 
-module FMSet.Universal where
+module set.FMSet.Universal where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 
-open import FMSet
+open import set.FMSet
 
 infixr 30 _++_
 
@@ -27,7 +27,7 @@ unitr-++ = FMSetElimProp.f (trunc _ _)
   (λ x p → cong (x ∷_) p)
 
 assoc-++ : ∀ (xs ys zs : FMSet A) → xs ++ (ys ++ zs) ≡ (xs ++ ys) ++ zs
-assoc-++ = FMSetElimProp.f (propPi (λ _ → propPi (λ _ → trunc _ _)))
+assoc-++ = FMSetElimProp.f (isPropΠ (λ _ → isPropΠ (λ _ → trunc _ _)))
   (λ ys zs → refl)
   (λ x p ys zs → cong (_∷_ x) (p ys zs))
 
@@ -37,13 +37,13 @@ cons-++ x = FMSetElimProp.f (trunc _ _)
   (λ y {xs} p → swap x y xs ∙ cong (_∷_ y) p)
 
 comm-++ : ∀ (xs ys : FMSet A) → xs ++ ys ≡ ys ++ xs
-comm-++ = FMSetElimProp.f (propPi (λ _ → trunc _ _))
+comm-++ = FMSetElimProp.f (isPropΠ (λ _ → trunc _ _))
   (λ ys → sym (unitr-++ ys))
   (λ x {xs} p ys → cong (x ∷_) (p ys)
                  ∙ cong (_++ xs) (cons-++ x ys)
                  ∙ sym (assoc-++ ys [ x ] xs))
 
-open import CMon
+open import set.CMon
 
 FMSetCMon : CMon (FMSet A)
 FMSetCMon = record
@@ -55,7 +55,7 @@ FMSetCMon = record
               ; MSet = trunc
               }
 
-module FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
+module set.FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
 
   open CMon.CMon C
 
@@ -78,7 +78,7 @@ module FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
   f♯-sing x = comm-⊗ (f x) e ∙ unit-⊗ (f x)
 
   f♯-++ : ∀ xs ys → f♯ (xs ++ ys) ≡ f♯ xs ⊗ f♯ ys
-  f♯-++ = FMSetElimProp.f (propPi λ _ → MSet _ _)
+  f♯-++ = FMSetElimProp.f (isPropΠ λ _ → MSet _ _)
     (λ ys → sym (unit-⊗ (f♯ ys)))
     (λ x {xs} p ys → cong (f x ⊗_) (p ys) ∙ assoc-⊗ (f x) (f♯ xs) (f♯ ys))
 

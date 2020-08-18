@@ -1,11 +1,11 @@
 {-# OPTIONS --cubical --safe #-}
 
-module FMGpd.Universal where
+module gpd.FMGpd.Universal where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 
-open import FMGpd
+open import gpd.FMGpd
 
 infixr 30 _⊗_
 
@@ -30,7 +30,7 @@ unitr-⊗ = FMGpdElimSet.f (λ _ → trunc _ _)
     comm a b (bas j) (bbs j) (bcs j) (λ k → bp k j) (λ k → bq k j) i)
 
 assoc-⊗ : ∀ (xs ys zs : FMGpd A) → xs ⊗ (ys ⊗ zs) ≡ (xs ⊗ ys) ⊗ zs
-assoc-⊗ = FMGpdElimSet.f (λ _ → isSetPi λ _ → isSetPi λ _ → trunc _ _)
+assoc-⊗ = FMGpdElimSet.f (λ _ → isSetΠ λ _ → isSetΠ λ _ → trunc _ _)
   (λ ys zs → refl)
   (λ x {xs} p ys zs → cong (x ∷_) (p ys zs))
   (λ a b {as bs cs} bas bbs bcs {p} bp {q} bq i ys zs j →
@@ -64,7 +64,7 @@ cons-⊗ x = FMGpdElimSet.f (λ _ → trunc _ _)
   )
 
 comm-⊗ : ∀ (xs ys : FMGpd A) → xs ⊗ ys ≡ ys ⊗ xs
-comm-⊗ = FMGpdElimSet.f (λ _ → isSetPi (λ _ → trunc _ _))
+comm-⊗ = FMGpdElimSet.f (λ _ → isSetΠ (λ _ → trunc _ _))
   (λ ys → sym (unitr-⊗ ys))
   (λ x {xs} p ys → cong (x ∷_) (p ys)
                  ∙ cong (_⊗ xs) (cons-⊗ x ys)
@@ -83,7 +83,7 @@ map f = FMGpdRec.f trunc [] (λ a bs → f a ∷ bs)
 map-⊗ : {B : Type ℓ} {f : A → B}
       → (xs ys : FMGpd A)
       → map f (xs ⊗ ys) ≡ map f xs ⊗ map f ys
-map-⊗ {f = f} = FMGpdElimSet.f (λ _ → isSetPi (λ _ → trunc _ _))
+map-⊗ {f = f} = FMGpdElimSet.f (λ _ → isSetΠ (λ _ → trunc _ _))
   (λ ys → refl)
   (λ x {xs} p ys → cong (f x ∷_) (p ys))
   λ a b {as bs cs} bas bbs bcs {p} bp {q} bq i ys j →

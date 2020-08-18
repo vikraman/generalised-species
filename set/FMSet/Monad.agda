@@ -1,12 +1,12 @@
 {-# OPTIONS --cubical --safe #-}
 
-module FMSet.Monad where
+module set.FMSet.Monad where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 
-open import FMSet renaming (FMSet to M)
-open import FMSet.Universal
+open import set.FMSet renaming (FMSet to M)
+open import set.FMSet.Universal
 
 map : {B : Type₀} → (A → B) → M A → M B
 map f = FMSetRec.f trunc [] (λ a bs → f a ∷ bs)

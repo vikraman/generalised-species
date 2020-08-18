@@ -1,11 +1,11 @@
 {-# OPTIONS --cubical --safe #-}
 
-module FMSet2.Universal where
+module set.FMSet2.Universal where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 
-open import FMSet2
+open import set.FMSet2
 
 private
   variable
@@ -30,7 +30,7 @@ unitr-++ = FMSetElimProp.f (trunc _ _)
   (λ x p → cong (_∷_ x) p)
 
 assoc-++ : ∀ (xs ys zs : FMSet A) → xs ++ (ys ++ zs) ≡ (xs ++ ys) ++ zs
-assoc-++ = FMSetElimProp.f (propPi (λ _ → propPi (λ _ → trunc _ _)))
+assoc-++ = FMSetElimProp.f (isPropΠ (λ _ → isPropΠ (λ _ → trunc _ _)))
   (λ ys zs → refl)
   (λ x p ys zs → cong (_∷_ x) (p ys zs))
 
@@ -67,7 +67,7 @@ cons-++ x = FMSetElimProp.f (trunc _ _)
 -- right ys x xs j = hcomp (λ k → λ { (j = i0) → ys ++ (x ∷ xs) ; (j = i1) → assoc-++ ys xs [ x ] k }) (ys ++ (cons-++ x xs j))
 
 comm-++ : ∀ (xs ys : FMSet A) → xs ++ ys ≡ ys ++ xs
-comm-++ = FMSetElimProp.f (propPi (λ _ → trunc _ _))
+comm-++ = FMSetElimProp.f (isPropΠ (λ _ → trunc _ _))
   (λ ys i → unitr-++ ys (~ i))
   (λ x {xs} p ys i → hcomp (λ j → λ { (i = i0) → x ∷ p ys (~ j)
                                     ; (i = i1) → hcomp (λ k → λ { (j = i0) → assoc-++ ys xs [ x ] k
@@ -89,7 +89,7 @@ comm-++ = FMSetElimProp.f (propPi (λ _ → trunc _ _))
                  -- ∙ sym (assoc-++ ys [ x ] xs)
 
 
-open import CMon
+open import set.CMon
 
 FMSetCMon : CMon (FMSet A)
 FMSetCMon = record
@@ -103,7 +103,7 @@ FMSetCMon = record
 
 module FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
 
-  open CMon.CMon C
+  open set.CMon.CMon C
 
   f♯ : FMSet A → M
   f♯ = FMSetRec.f MSet e (λ x m → f x ⊗ m)
@@ -121,7 +121,7 @@ module FMSetUniversal {M : Type ℓ} (C : CMon M) (f : A → M) where
   f♯-sing x = comm-⊗ (f x) e ∙ unit-⊗ (f x)
 
   f♯-++ : ∀ xs ys → f♯ (xs ++ ys) ≡ f♯ xs ⊗ f♯ ys
-  f♯-++ = FMSetElimProp.f (propPi λ _ → MSet _ _)
+  f♯-++ = FMSetElimProp.f (isPropΠ λ _ → MSet _ _)
     (λ ys → sym (unit-⊗ (f♯ ys)))
     (λ x {xs} p ys i → hcomp (λ j → λ { (i = i0) → f x ⊗ p ys (~ j)
                                       ; (i = i1) → (f x ⊗ f♯ xs) ⊗ f♯ ys })

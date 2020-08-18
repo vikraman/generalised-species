@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical #-}
 
-module FMSet2.Paths where
+module set.FMSet2.Paths where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
@@ -10,8 +10,8 @@ open import Cubical.Data.Empty
 open import Cubical.Data.Unit
 open import Cubical.Data.Nat
 
-open import FMSet2
-open import FMSet2.Universal
+open import set.FMSet2
+open import set.FMSet2.Universal
 
 private
   variable

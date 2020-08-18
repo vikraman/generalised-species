@@ -2,3 +2,4 @@ name: generalised-species
 include: .
 depend:
   cubical
+  hott-uf

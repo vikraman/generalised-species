@@ -1,20 +1,20 @@
 {-# OPTIONS --cubical --safe #-}
 
-module FMSet2.Product where
+module set.FMSet2.Product where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sum
 open import Cubical.Data.Prod
 
-open import FMSet2
-open import FMSet2.Universal
+open import set.FMSet2
+open import set.FMSet2.Universal
 
 private
   variable
     A B : Type₀
 
-FMSet×-isSet : isSet (FMSet A ×Σ FMSet B)
+FMSet×-isSet : isSet (FMSet A × FMSet B)
 FMSet×-isSet = isOfHLevelΣ 2 trunc (λ _ → trunc)
 
 map : (A → B) → FMSet A → FMSet B
@@ -25,7 +25,7 @@ map-++ f = FMSetElimProp.f (λ {xs} → propPi (λ ys → trunc (map f (xs ++ ys
   (λ ys → refl)
   (λ x {xs} p ys → cong (f x ∷_) (p ys))
 
-f : FMSet (A ⊎ B) → FMSet A ×Σ FMSet B
+f : FMSet (A ⊎ B) → FMSet A × FMSet B
 f = FMSetUniversal.f♯
     (record
        { e = [] , []
@@ -37,7 +37,7 @@ f = FMSetUniversal.f♯
        })
     (λ { (inl a) → [ a ] , [] ; (inr b) → [] , [ b ] })
 
-g : FMSet A ×Σ FMSet B → FMSet (A ⊎ B)
+g : FMSet A × FMSet B → FMSet (A ⊎ B)
 g (as , bs) = map inl as ++ map inr bs
 
 f-g : ∀ (as : FMSet A) (bs : FMSet B) → f (g (as , bs)) ≡ (as , bs)
