@@ -7,26 +7,7 @@ module gpd.FSMG (ua : Univalence) where
 
 open import UF-hlevels ua
 
-PathOver : {A : 𝓤 ̇} (P : A → 𝓤 ̇) {x y : A} → (p : x ≡ y) → P x → P y → 𝓤 ̇
-PathOver P p u v = transport P p u ≡ v
-
-↓-cst-in : {A : 𝓤 ̇} {x y : A} (p : x ≡ y) → x ≡ y [ (λ _ → A) ↓ p ]
-↓-cst-in refl = refl
-
-syntax PathOver P p u v = u ≡ v [ P ↓ p ]
-
-■ : {A : 𝓤 ̇} {P : A → 𝓤 ̇ }
-  → {x y z : A} {u : P x} {v : P y} {w : P z}
-  → (p : x ≡ y) (q : y ≡ z)
-  → u ≡ v [ P ↓ p ] → v ≡ w [ P ↓ q ] → u ≡ w [ P ↓ (p ∙ q) ]
-■ refl refl = _∙_
-
-$ : {A : 𝓤 ̇} {P : A → 𝓤 ̇}
-  → {x y : A} {u : P x} {v : P y}
-  → (f : A → A) (g : {x : A} → P x → P (f x))
-  → (p : x ≡ y)
-  → u ≡ v [ P ↓ p ] → g u ≡ g v [ P ↓ ap f p ]
-$ f g refl = ap g
+open import gpd.UF-Paths
 
 data FSMG (A : 𝓤 ̇) : 𝓤 ̇ where
   nil : FSMG A
@@ -87,4 +68,9 @@ module rec {A B : 𝓤 ̇}
   where
 
     f : FSMG A → B
-    f = elim.f {B = λ _ → B} nil* (λ x b → b) (λ x y b → {!!}) {!!} {!!} trunc*
+    f = elim.f {B = λ _ → B} nil* (λ x b → x ::* b)
+                (λ x y b → ↓-cst-in (swap x y _) (swap* x y b))
+                (λ x y b → ■-cst (swap x y _) (swap y x _) (swap* x y b) (swap* y x b)
+                         ∙ {!!})
+                {!!}
+                trunc*
