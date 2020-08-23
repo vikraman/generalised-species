@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical --safe #-}
 
-module set.FMSet2 where
+module set.old.FMSet2 where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
