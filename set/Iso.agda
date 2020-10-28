@@ -17,13 +17,15 @@ private
 
 M≃N : MSet A ≃ NSet A
 M≃N {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
-  where module f-univ = M.univ N.NSetCMon (λ a → N.[ a ])
+  where module f-univ = M.univ (NSetCMon A) N.[_]
         f : MSet A → NSet A
         f = f-univ.f♯
-        module g-univ = N.univ M.MSetCMon (λ a → M.[ a ])
+        module g-univ = N.univ (MSetCMon A) M.[_]
         g : NSet A → MSet A
         g = g-univ.f♯
+        f-g-htpy : idfun (NSet A) ≡ f ∘ g
+        f-g-htpy = {!!}
         f-g : (xs : NSet A) → f (g xs) ≡ xs
-        f-g = {!!}
+        f-g xs i = f-g-htpy (~ i) xs
         g-f : (xs : MSet A) → g (f xs) ≡ xs
         g-f = {!!}

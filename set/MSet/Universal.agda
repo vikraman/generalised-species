@@ -46,10 +46,10 @@ comm-++ = elimProp.f (isPropΠ (λ _ → trunc _ _))
                  ∙ cong (_++ xs) (cons-++ x ys)
                  ∙ sym (assoc-++ ys [ x ] xs))
 
-open import set.CMon
+open import set.CMon using (CMon; CMonHom; CMonHom≡)
 
-MSetCMon : CMon (MSet A)
-MSetCMon = record
+MSetCMon : (A : Type ℓ) → CMon (MSet A)
+MSetCMon A = record
               { e = []
               ; _⊗_ = _++_
               ; comm-⊗ = comm-++
@@ -86,14 +86,28 @@ module univ {M : Type ℓ₁} (C : CMon M) (f : A → M) where
   module _ (h : MSet A → M) (h-nil : h [] ≡ e) (h-sing : ∀ x → h [ x ] ≡ f x)
            (h-++ : ∀ xs ys → h (xs ++ ys) ≡ h xs ⊗ h ys) where
 
-    f♯-unique : h ≡ f♯
-    f♯-unique = funExt (elimProp.f (isSetM _ _)
-      h-nil (λ x {xs} p → (h-++ [ x ] xs) ∙ cong (_⊗ h xs) (h-sing x) ∙ cong (f x ⊗_) p))
+    f♯-htpy : ∀ xs → h xs ≡ f♯ xs
+    f♯-htpy = elimProp.f (isSetM _ _)
+      h-nil (λ x {xs} p → h-++ [ x ] xs ∙ cong (_⊗ h xs) (h-sing x) ∙ cong (f x ⊗_) p)
 
-  -- MSetUniversal : isContr (CMonHom MSetCMon C)
-  -- MSetUniversal = c , {!!}
-  --   where c : CMonHom MSetCMon C
-  --         c = record { f = f♯
-  --                    ; f-e = f♯-nil ; f-++ = f♯-++ }
-  --         p : ∀ y → c ≡ y
-  --         p record { f = f ; f-e = f-e ; f-++ = f-++ } = {!!}
+    f♯-unique : f♯ ≡ h
+    f♯-unique = sym (funExt f♯-htpy)
+
+univ : ∀ {ℓ₁} {ℓ₂} (A : Type ℓ₁) {M : Type ℓ₂} (CM : CMon M) → CMonHom (MSetCMon A) CM ≃ (A → M)
+univ A {M} CM = isoToEquiv (iso q p q-p p-q)
+  where module C = CMon CM ; module u = univ CM
+        p : (A → M) → CMonHom (MSetCMon A) CM
+        p f = u.f♯ f , u.f♯-nil f , u.f♯-++ f
+        q : CMonHom (MSetCMon A) CM → (A → M)
+        q (h , h-e , h-⊗) = h ∘ [_]
+        q-p : (f : A → M) → q (p f) ≡ f
+        q-p f = funExt (λ x → C.unitr-⊗ (f x))
+        p-q : (h : CMonHom (MSetCMon A) CM) → p (q h) ≡ h
+        p-q (h , h-nil , h-++) = CMonHom≡ {CM = MSetCMon A} {CN = CM} (u.f♯-unique (h ∘ [_]) h h-nil (λ _ → refl) h-++)
+
+univ-htpy : ∀ {ℓ} {A : Type ℓ} → (h : CMonHom (MSetCMon A) (MSetCMon A)) (p : ∀ x → h .fst ([ x ]) ≡ [ x ]) → ∀ xs → h .fst xs ≡ xs
+univ-htpy {A = A} (h , h-nil , h-++) h-sing xs = h~η♯ xs ∙ η♯~id xs
+  where h~η♯ : ∀ xs → h xs ≡ univ.f♯ (MSetCMon A) [_] xs
+        h~η♯ = univ.f♯-htpy (MSetCMon A) [_] h h-nil h-sing h-++
+        η♯~id : ∀ xs → univ.f♯ (MSetCMon A) [_] xs ≡ xs
+        η♯~id xs i = univ.f♯-htpy (MSetCMon A) [_] (idfun _) refl (λ _ → refl) (λ _ _ → refl) xs (~ i)

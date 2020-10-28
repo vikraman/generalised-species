@@ -50,10 +50,10 @@ comm-++ = elimProp.f (isPropΠ (λ _ → trunc _ _))
                  ∙ cong (_++ xs) (cons-++ x ys)
                  ∙ sym (assoc-++ ys [ x ] xs))
 
-open import set.CMon
+open import set.CMon using (CMon; CMonHom; CMonHom≡)
 
-NSetCMon : CMon (NSet A)
-NSetCMon = record
+NSetCMon : (A : Type ℓ) → CMon (NSet A)
+NSetCMon A = record
               { e = []
               ; _⊗_ = _++_
               ; comm-⊗ = comm-++
@@ -61,7 +61,6 @@ NSetCMon = record
               ; unit-⊗ = unitl-++
               ; isSetM = trunc
               }
-
 
 module univ {M : Type ℓ₁} (C : CMon M) (f : A → M) where
 
@@ -94,6 +93,18 @@ module univ {M : Type ℓ₁} (C : CMon M) (f : A → M) where
   module _ (h : NSet A → M) (h-nil : h [] ≡ e) (h-sing : ∀ x → h [ x ] ≡ f x)
            (h-++ : ∀ xs ys → h (xs ++ ys) ≡ h xs ⊗ h ys) where
 
-    f♯-unique : h ≡ f♯
-    f♯-unique = funExt (elimProp.f (isSetM _ _)
-      h-nil (λ x {xs} p → (h-++ [ x ] xs) ∙ cong (_⊗ h xs) (h-sing x) ∙ cong (f x ⊗_) p))
+    f♯-unique : f♯ ≡ h
+    f♯-unique = sym (funExt (elimProp.f (isSetM _ _)
+      h-nil (λ x {xs} p → (h-++ [ x ] xs) ∙ cong (_⊗ h xs) (h-sing x) ∙ cong (f x ⊗_) p)))
+
+univ : ∀ {ℓ₁} {ℓ₂} (A : Type ℓ₁) {M : Type ℓ₂} (CM : CMon M) → CMonHom (NSetCMon A) CM ≃ (A → M)
+univ A {M} CM = isoToEquiv (iso q p q-p p-q)
+  where module C = CMon CM ; module u = univ CM
+        p : (A → M) → CMonHom (NSetCMon A) CM
+        p f = u.f♯ f , u.f♯-nil f , u.f♯-++ f
+        q : CMonHom (NSetCMon A) CM → (A → M)
+        q (h , h-e , h-⊗) = h ∘ [_]
+        q-p : (f : A → M) → q (p f) ≡ f
+        q-p f = funExt (λ x → C.unitr-⊗ (f x))
+        p-q : (h : CMonHom (NSetCMon A) CM) → p (q h) ≡ h
+        p-q (h , h-nil , h-++) = CMonHom≡ {CM = NSetCMon A} {CN = CM} (u.f♯-unique (h ∘ [_]) h h-nil (λ _ → refl) h-++)

@@ -16,6 +16,9 @@ record CMon {ℓ} (M : Type ℓ) : Type ℓ where
     assoc-⊗ : ∀ x y z → x ⊗ (y ⊗ z) ≡ (x ⊗ y) ⊗ z
     isSetM : isSet M
 
+  unitr-⊗ : ∀ x → x ⊗ e ≡ x
+  unitr-⊗ x = comm-⊗ x e ∙ unit-⊗ x
+
 module _ {ℓ₁ ℓ₂} {M : Type ℓ₁} {N : Type ℓ₂} (CM : CMon M) (CN : CMon N) where
 
   module M = CMon CM ; module N = CMon CN
@@ -33,6 +36,11 @@ CMonHom≡ : ∀ {ℓ₁ ℓ₂} {M : Type ℓ₁} {N : Type ℓ₂} {CM : CMon 
          → (p : H1 .fst ≡ H2 .fst)
          → H1 ≡ H2
 CMonHom≡ {CM = CM} {CN} = Σ≡Prop (λ f → isCMonHomProp CM CN f)
+
+CMonHom∘ : ∀ {ℓ₁ ℓ₂ ℓ₃} {M : Type ℓ₁} {N : Type ℓ₂} {O : Type ℓ₃}
+         → (CM : CMon M) (CN : CMon N) (CO : CMon O)
+         → CMonHom CN CO → CMonHom CM CN → CMonHom CM CO
+CMonHom∘ _ _ _ (g , g-e , g-⊗) (f , f-e , f-⊗) = g ∘ f , cong g f-e ∙ g-e , λ x y → cong g (f-⊗ x y) ∙ g-⊗ (f x) (f y)
 
 data Free {ℓ} (A : Type ℓ) : Type ℓ where
   η : A → Free A
@@ -95,6 +103,9 @@ module univ {ℓ₁} {M : Type ℓ₁} (C : CMon M) {ℓ₂} {A : Type ℓ₂} (
   f♯-e : f♯ Free.e ≡ C.e
   f♯-e = refl
 
+  f♯-η : f♯ ∘ η ≡ f
+  f♯-η = refl
+
   f♯-⊗ : ∀ m₁ m₂ → f♯ (m₁ Free.⊗ m₂) ≡ (f♯ m₁) C.⊗ (f♯ m₂)
   f♯-⊗ m₁ m₂ = refl
 
@@ -110,11 +121,28 @@ module univ {ℓ₁} {M : Type ℓ₁} (C : CMon M) {ℓ₂} {A : Type ℓ₂} (
                            (λ {m₁} {m₂} p q → h-⊗ m₁ m₂ ∙ cong (C._⊗ h m₂) p ∙ cong ((f♯ m₁) C.⊗_) q)
 
 univ : ∀ {ℓ₁} {ℓ₂} (A : Type ℓ₁) {M : Type ℓ₂} (CM : CMon M) → CMonHom (FreeCMon A) CM ≃ (A → M)
-univ A {M} CM = isoToEquiv (iso q p (λ _ → refl) p-q)
+univ A {M} CM = isoToEquiv (iso q p q-p p-q)
   where module C = CMon CM ; module u = univ CM
         p : (A → M) → CMonHom (FreeCMon A) CM
         p f = u.f♯ f , u.f♯-e f , u.f♯-⊗ f
         q : CMonHom (FreeCMon A) CM → (A → M)
         q (h , h-e , h-⊗) = h ∘ η
+        q-p : (f : A → M) → q (p f) ≡ f
+        q-p f = refl
         p-q : (h : CMonHom (FreeCMon A) CM) → p (q h) ≡ h
         p-q (h , h-e , h-⊗) = CMonHom≡ {CM = FreeCMon A} {CN = CM} (u.f♯-unique (h ∘ η) h (λ _ → refl) h-e h-⊗)
+
+univ-η : ∀ {ℓ} (A : Type ℓ) → univ.f♯ (FreeCMon A) η ≡ idfun (Free A)
+univ-η A = funExt p
+  where p : (x : Free A) → univ.f♯ (FreeCMon A) η x ≡ idfun (Free A) x
+        p = elimProp.f (trunc _ _) (λ _ → refl) refl (λ p q → cong (Free._⊗ _) p ∙ cong (_ Free.⊗_) q)
+
+open import set.Monad
+
+-- FreeCMonMonad : ∀ {ℓ} → Monad {ℓ} Free
+-- Monad.map FreeCMonMonad f = univ.f♯ (FreeCMon _) λ a → Free.η (f a)
+-- Monad.η FreeCMonMonad = Free.η
+-- FreeCMonMonad Monad.* = univ.f♯ (FreeCMon _)
+-- Monad.unitl FreeCMonMonad = univ-η _
+-- Monad.unitr FreeCMonMonad = univ.f♯-η (FreeCMon _)
+-- Monad.assoc FreeCMonMonad f g = funExt (elimProp.f (trunc _ _) (λ _ → refl) refl λ p q → {!!})
