@@ -45,4 +45,3 @@ record RMonad {ℓ₁} {ℓ₂} (T : Type ℓ₁ → Type ℓ₂) : Type (ℓ-ma
 
   _⊚_ : {A B C : Type ℓ₁} → (A → T B) → (B → T C) → A → T C
   f ⊚ g = g * ∘ f
-

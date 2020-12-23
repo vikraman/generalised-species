@@ -11,29 +11,27 @@ private
   variable
     ℓ : Level
 
-open import Cubical.Foundations.Logic
+open import Cubical.Functions.Logic
+open import Cubical.Foundations.Powerset
 
-P : hSet ℓ → hSet (ℓ-suc ℓ)
-P (A , ϕ) = ℙ A , powersets-are-sets
+PSet : hSet ℓ → hSet (ℓ-suc ℓ)
+PSet (A , ϕ) = ℙ A , powersets-are-sets
 
-η : {A : hSet ℓ} → A .fst → P A .fst
-η {A = (A , ϕ)} x = λ y → (x ≡ y) , ϕ x y
+η : {ASet@(A , ϕ) : hSet ℓ} → A → ℙ A
+η {ASet = (A , ϕ)} x = λ y → (x ≡ y) , ϕ x y
 
 _* : {A B : Type ℓ} → (A → ℙ B) → ℙ A → ℙ B
 _* {A = A} {B} f = λ X b → ∃[ a ] f a b ⊓ X a
 
+map : {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} → (A → B) → ℙ A → ℙ B
+map {BSet = BSet} f = (η {ASet = BSet} ∘ f) *
+
 open import set.Monad
 
-PRMonad : ∀ {ℓ} → RMonad {ℓ} {ℓ-suc ℓ} ℙ
-RMonad.map PRMonad f = {!!}
-RMonad.η PRMonad = η {A = {!!}}
-PRMonad RMonad.* = {!!}
-RMonad.unitl PRMonad = {!!}
-RMonad.unitr PRMonad = {!!}
-RMonad.assoc PRMonad = {!!}
-
--- η PKleisli = λ a → λ b → (a ≡ b) , {!!}
--- PKleisli * = {!!}
--- l1 PKleisli = {!!}
--- l2 PKleisli = {!!}
--- l3 PKleisli = {!!}
+-- PSetRMonad : ∀ {ℓ} → RMonad {ℓ} ℙ
+-- RMonad.map PSetRMonad = {!!}
+-- RMonad.η PSetRMonad = {!!}
+-- PSetRMonad RMonad.* = {!!}
+-- RMonad.unitl PSetRMonad = {!!}
+-- RMonad.unitr PSetRMonad = {!!}
+-- RMonad.assoc PSetRMonad = {!!}
