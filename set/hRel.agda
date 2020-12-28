@@ -43,3 +43,63 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) DSet@(D , χ) : hSet ℓ} wh
 
   assoc : {f : A ⇸ B} {g : B ⇸ C} {h : C ⇸ D} → h ⊚ (g ⊚ f) ≡ (h ⊚ g) ⊚ f
   assoc {f} {g} {h} i = (_**_ {ASet = BSet} {BSet = CSet} {CSet = DSet} h g) (~ i) ∘ f
+
+data O {ℓ} : Type ℓ where
+
+! : {A : Type ℓ} → O ⇸ A
+! ()
+
+¡ : {A : Type ℓ} → A ⇸ O
+¡ a ()
+
+ptd : {A B : Type ℓ} → A ⇸ B
+ptd = ! ⊚ ¡
+
+open import Cubical.Data.Sum
+
+_⊕_ : (A B : Type ℓ) → Type ℓ
+A ⊕ B = A ⊎ B
+
+_⊕₀_ : (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) → hSet ℓ
+(A , ϕ) ⊕₀ (B , ψ) = A ⊕ B , isSetSum ϕ ψ
+
+module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) DSet@(D , χ) : hSet ℓ} where
+
+  ⊕[_,_] : A ⇸ B → C ⇸ D → (A ⊕ C) ⇸ (B ⊕ D)
+  ⊕[ f , g ] (inl a) (inl b) = f a b
+  ⊕[ f , g ] (inl a) (inr d) = ptd a d
+  ⊕[ f , g ] (inr c) (inl b) = ptd c b
+  ⊕[ f , g ] (inr c) (inr d) = g c d
+
+module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
+
+  p₁ : A ⊕ B ⇸ A
+  p₁ (inl a) = よ ASet a
+  p₁ (inr b) = ptd b
+
+  p₂ : A ⊕ B ⇸ B
+  p₂ (inl a) = ptd a
+  p₂ (inr b) = よ BSet b
+
+  i₁ : A ⇸ A ⊕ B
+  i₁ x (inl a) = よ ASet x a
+  i₁ x (inr b) = ptd x b
+
+  i₂ : B ⇸ A ⊕ B
+  i₂ y (inl a) = ptd y a
+  i₂ y (inr b) = よ BSet y b
+
+module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) : hSet ℓ} where
+
+  [_,_] : A ⇸ B → A ⇸ C → A ⇸ B ⊕ C
+  [ f , g ] a (inl b) = f a b
+  [ f , g ] a (inr c) = g a c
+
+  [[_,_]]  : A ⇸ C → B ⇸ C → A ⊕ B ⇸ C
+  [[ f , g ]] (inl a) c = f a c
+  [[ f , g ]] (inr b) c = g b c
+
+module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
+  σ : A ⊕ B ⇸ B ⊕ A
+  σ = [_,_] {ASet = ASet ⊕₀ BSet} {BSet = BSet} {CSet = ASet}
+      (p₂ {ASet = ASet} {BSet = BSet}) (p₁ {ASet = ASet} {BSet = BSet})
