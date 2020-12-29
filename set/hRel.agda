@@ -3,7 +3,7 @@
 module set.hRel where
 
 open import Cubical.Core.Everything
-open import Cubical.Foundations.Everything hiding (assoc)
+open import Cubical.Foundations.Everything hiding (assoc ; isIso)
 open import Cubical.Data.Sigma
 open import Cubical.HITs.PropositionalTruncation
 open import Agda.Primitive
@@ -43,6 +43,35 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) DSet@(D , χ) : hSet ℓ} wh
 
   assoc : {f : A ⇸ B} {g : B ⇸ C} {h : C ⇸ D} → h ⊚ (g ⊚ f) ≡ (h ⊚ g) ⊚ f
   assoc {f} {g} {h} i = (_**_ {ASet = BSet} {BSet = CSet} {CSet = DSet} h g) (~ i) ∘ f
+
+module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
+
+  isIso : (f : A ⇸ B) → Type (ℓ-suc ℓ)
+  isIso f = Σ _ λ g → (g ⊚ f ≡ id ASet) × (f ⊚ g ≡ id BSet)
+
+  isPropIsIso : {f : A ⇸ B} → isProp (isIso f)
+  isPropIsIso {f} (g , p , q) (g' , p' , q') =
+    Σ≡Prop (λ _ → isProp× (isSet⇸ _ _) (isSet⇸ _ _))
+           (g ≡⟨ sym (unitl {ASet = BSet} {BSet = ASet}) ⟩
+            id ASet ⊚ g ≡⟨ cong (_⊚ g) (sym p') ⟩
+            (g' ⊚ f) ⊚ g ≡⟨ sym (assoc {ASet = BSet} {BSet = ASet} {CSet = BSet} {DSet = ASet} {g} {f} {g'}) ⟩
+            g' ⊚ (f ⊚ g) ≡⟨ cong (g' ⊚_) q ⟩
+            g' ⊚ id BSet ≡⟨ sym (unitr {ASet = BSet} {BSet = ASet}) ⟩
+            g' ∎)
+
+_≅_ : hSet ℓ → hSet ℓ → Type (ℓ-suc ℓ)
+(A , ϕ) ≅ (B , ψ) = Σ _ (isIso {ASet = A , ϕ} {BSet = B , ψ})
+
+module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
+
+  ω' : A ≡ B → A ⇸ B
+  ω' p = subst (A ⇸_) p (id ASet)
+
+  ω : ASet ≡ BSet → ASet ≅ BSet
+  ω p = subst (λ X → ASet ≅ X) p (id ASet , id ASet , {!!})
+
+  isEquivω : isEquiv ω
+  isEquivω = {!!}
 
 data O {ℓ} : Type ℓ where
 
