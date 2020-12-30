@@ -3,7 +3,7 @@
 module set.Esp where
 
 open import Cubical.Core.Everything
-open import Cubical.Foundations.Everything hiding (uncurry)
+open import Cubical.Foundations.Everything hiding (id ; curry ; uncurry)
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum
 open import Cubical.Data.Empty

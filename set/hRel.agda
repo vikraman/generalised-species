@@ -3,7 +3,7 @@
 module set.hRel where
 
 open import Cubical.Core.Everything
-open import Cubical.Foundations.Everything hiding (assoc ; isIso)
+open import Cubical.Foundations.Everything hiding (assoc ; isIso ; id)
 open import Cubical.Data.Sigma
 open import Cubical.HITs.PropositionalTruncation
 open import Agda.Primitive
@@ -67,11 +67,11 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
   ω' : A ≡ B → A ⇸ B
   ω' p = subst (A ⇸_) p (id ASet)
 
-  ω : ASet ≡ BSet → ASet ≅ BSet
-  ω p = subst (λ X → ASet ≅ X) p (id ASet , id ASet , {!!})
+  -- ω : ASet ≡ BSet → ASet ≅ BSet
+  -- ω p = subst (λ X → ASet ≅ X) p (id ASet , id ASet , {!!})
 
-  isEquivω : isEquiv ω
-  isEquivω = {!!}
+  -- isEquivω : isEquiv ω
+  -- isEquivω = {!!}
 
 data O {ℓ} : Type ℓ where
 
