@@ -84,6 +84,18 @@ data O {ℓ} : Type ℓ where
 ptd : {A B : Type ℓ} → A ⇸ B
 ptd = ! ⊚ ¡
 
+record II {ℓ} : Type ℓ where
+  constructor tt
+
+IIContr : isContr (II {ℓ})
+IIContr = tt , λ { tt → refl }
+
+IISet : ∀ {ℓ} → hSet ℓ
+IISet = II , isProp→isSet (isContr→isProp IIContr)
+
+ii : {A : Type ℓ} → A ⇸ II
+ii a = よ IISet tt
+
 open import Cubical.Data.Sum
 
 _⊕_ : (A B : Type ℓ) → Type ℓ
@@ -132,3 +144,9 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
   σ : A ⊕ B ⇸ B ⊕ A
   σ = [_,_] {ASet = ASet ⊕₀ BSet} {BSet = BSet} {CSet = ASet}
       (p₂ {ASet = ASet} {BSet = BSet}) (p₁ {ASet = ASet} {BSet = BSet})
+
+_⊗_ : (A B : Type ℓ) → Type ℓ
+A ⊗ B = A × B
+
+_⊗₀_ : (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) → hSet ℓ
+(A , ϕ) ⊗₀ (B , ψ) = A ⊗ B , isSet× ϕ ψ
