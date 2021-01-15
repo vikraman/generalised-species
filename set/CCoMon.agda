@@ -17,3 +17,13 @@ record CCoMon {ℓ} (C : Type ℓ) : Type (ℓ-suc ℓ) where
 
   CSet : hSet ℓ
   CSet = C , isSetC
+
+open import set.MSet
+open import set.Power as P
+
+module _ {ℓ} {ASet@(A , ϕ) : hSet ℓ} where
+
+  MSetCCoMon : CCoMon (MSet A)
+  CCoMon.e MSetCCoMon xs tt = よ (MSet A , trunc) xs []
+  CCoMon.Δ MSetCCoMon = {!!}
+  CCoMon.isSetC MSetCCoMon = {!!}
