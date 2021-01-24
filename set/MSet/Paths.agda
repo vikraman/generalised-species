@@ -1,19 +1,17 @@
-{-# OPTIONS --cubical --exact-split --safe #-}
+{-# OPTIONS --cubical --exact-split #-}
 
 module set.MSet.Paths where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
-open import Cubical.Data.Sum
-open import Cubical.Data.Prod
-open import Cubical.Data.Empty as E
-open import Cubical.Data.Unit
-open import Cubical.Data.Nat
 open import Cubical.Data.Sigma
-open import Cubical.Functions.Embedding
+open import Cubical.Data.Nat
 
+open import set.Prelude
 open import set.MSet
 open import set.MSet.Universal
+open import set.MSet.Length
+open import set.MSet.Nat
 
 private
   variable
@@ -23,109 +21,55 @@ private
     a x : A
     xs ys : MSet A
 
-disj-nil-cons : x :: xs ≡ [] → ⊥
-disj-nil-cons p = transport (λ i → fst (code (p i))) tt
-  where code : MSet A → hProp ℓ-zero
-        code = rec.f (⊥ , isProp⊥)
-                     (λ _ _ → Unit , isPropUnit)
-                     (λ _ _ _ _ → Unit , isPropUnit)
-                     isSetHProp
+module _ {ϕ : isSet A} (a b : A) where
 
-disj-cons-nil : [] ≡ x :: xs → ⊥
-disj-cons-nil p = disj-nil-cons (sym p)
+  lem71 : ([ a ] ≡ [ b ]) ≃ (a ≡ b)
+  lem71 = propBiimpl→Equiv (trunc _ _) (ϕ _ _) (λ p → [-]-inj {ϕ = ϕ} (lenOnePath-in {ϕ = ϕ} p)) (cong [_])
 
-open import set.MSet.Nat using (length)
+μ : MSet (MSet A) → MSet A
+μ = univ.f♯ (MSetCMon _) (idfun (MSet _))
 
-lenZero-out : (xs : MSet A) → length xs ≡ 0 → [] ≡ xs
-lenZero-out = elimProp.f (isPropΠ λ _ → trunc _ _)
-                         (λ _ → refl)
-                         (λ x {xs} f p → E.rec (snotz p))
+μ-cons : (x : MSet A) (xs : MSet (MSet A)) → μ (x :: xs) ≡ x ++ μ xs
+μ-cons = univ.f♯-cons (MSetCMon _) (idfun (MSet _))
 
-lenZero-eqv : (xs : MSet A) → (length xs ≡ 0) ≃ ([] ≡ xs)
-lenZero-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (trunc _ _) (lenZero-out xs) (λ p i → length (p (~ i)))
+length-++ : (x y : MSet A) → length (x ++ y) ≡ length x + length y
+length-++ x y = elimProp.f {B = λ xs → length (xs ++ y) ≡ length xs + length y} (isSetℕ _ _) refl TODO x
 
-singSet : Type ℓ → Type ℓ
-singSet A = Σ (MSet A) (λ xs → 1 ≡ length xs)
+mlen : MSet (MSet A) → MSet ℕ
+mlen = univ.f♯ (MSetCMon _) ([_] ∘ length)
 
-is-sing-pred : MSet A → A → Type _
-is-sing-pred xs a = [ a ] ≡ xs
+mlen-cons : (x : MSet A) (xs : MSet (MSet A)) → mlen (x :: xs) ≡ length x :: mlen xs
+mlen-cons = univ.f♯-cons (MSetCMon ℕ) ([_] ∘ length)
 
-is-sing-pred-prop : (xs : MSet A) (z : A) → isProp (is-sing-pred xs z)
-is-sing-pred-prop xs a = trunc [ a ] xs
+mlenfold : MSet ℕ → ℕ
+mlenfold = univ.f♯ ℕCMon (idfun ℕ)
 
-is-sing : MSet A → Type _
-is-sing xs = Σ _ (is-sing-pred xs)
+mlenfold-cons : (n : ℕ) (xs : MSet (MSet A)) → mlenfold (n :: mlen xs) ≡ n + mlenfold (mlen xs)
+mlenfold-cons n xs = univ.f♯-cons ℕCMon (idfun ℕ) n (mlen xs)
 
-[_]-is-sing : (a : A) → is-sing [ a ]
-[ a ]-is-sing = a , refl
+μ-len : (s : MSet (MSet A)) → length (μ s) ≡ mlenfold (mlen s)
+μ-len = elimProp.f (isSetℕ _ _)
+  refl
+  λ x {xs} p → cong length (μ-cons x xs)
+             ∙ length-++ x (μ xs)
+             ∙ sym (cong mlenfold (mlen-cons x xs)
+                   ∙ mlenfold-cons (length x) xs
+                   ∙ cong (length x +_) (sym p))
 
-sing=isProp : ∀ {x y : A} → isProp ([ x ] ≡ [ y ])
-sing=isProp {x = x} {y = y} = trunc [ x ] [ y ]
+module _ {ϕ : isSet A} (a : A) (s : MSet (MSet A)) where
 
-sing=-in : ∀ {x y : A} → x ≡ y → [ x ] ≡ [ y ]
-sing=-in p i = [ p i ]
+  lem72 : [ a ] ≡ μ s → Σ (MSet (MSet A)) λ s' → (μ s' ≡ []) × ([ a ] :: s' ≡ s)
+  lem72 = TODO
 
-sing=isContr : ∀ {x y : A} → x ≡ y → isContr ([ x ] ≡ [ y ])
-sing=isContr p = sing=-in p , sing=isProp (sing=-in p)
+module _ {ϕ : isSet A} (s1 s2 : MSet (MSet A)) where
 
-lenOne-down : (x : A) (xs : MSet A) → length (x :: xs) ≡ 1 → [] ≡ xs
-lenOne-down x xs p = lenZero-out xs (injSuc p)
+  lem73 : μ (s1 ++ s2) ≡ μ s1 ++ μ s2
+  lem73 = univ.f♯-++ (MSetCMon A) (idfun (MSet A)) s1 s2
 
-lenOne-cons : (x : A) (xs : MSet A) → length (x :: xs) ≡ 1 → is-sing (x :: xs)
-lenOne-cons x xs p =
-  let q = lenOne-down x xs p
-  in transp (λ i → is-sing (x :: q i)) i0 [ x ]-is-sing
+module _ {ϕ : isSet A} {ψ : isSet B} (a : A) (t : MSet (A × B)) where
 
-lenTwo-⊥ : (x y : A) (xs : MSet A) → (length (y :: x :: xs) ≡ 1) ≃ ⊥
-lenTwo-⊥ x y xs = (λ p → E.rec (snotz (injSuc p))) , record { equiv-proof = E.elim }
+  mfst : MSet (A × B) → MSet A
+  mfst = univ.f♯ (MSetCMon A) ([_] ∘ fst)
 
-isContrlenTwo-⊥→X : (X : Type ℓ) (x y : A) (xs : MSet A) → isContr (length (y :: x :: xs) ≡ 1 → X)
-isContrlenTwo-⊥→X X x y xs = subst (λ Z → isContr (Z → X)) (sym (ua (lenTwo-⊥ x y xs))) (isContr⊥→A {A = X})
-
-lenOne-swap : {A : Type ℓ} (x y : A) (xs : MSet A)
-            → PathP (λ i → length (MSet.swap x y xs i) ≡ 1 → is-sing (MSet.swap x y xs i))
-                    (λ p → lenOne-cons x (y :: xs) p)
-                    (λ p → lenOne-cons y (x :: xs) p)
-lenOne-swap {A = A} x y xs =
-  transport (sym (PathP≡Path (λ i → length (MSet.swap x y xs i) ≡ 1 → is-sing (MSet.swap x y xs i)) _ _))
-            (isContr→isProp (isContrlenTwo-⊥→X _ x y xs) _ _)
-
-lenOne : Type ℓ → Type _
-lenOne A = Σ (MSet A) (λ xs → length xs ≡ 1)
-
-module _ {ϕ : isSet A} where
-
-  is-sing-set : (xs : MSet A) → isSet (is-sing xs)
-  is-sing-set xs = isSetΣ ϕ λ x → isProp→isSet (is-sing-pred-prop xs x)
-
-  lenOne-out : (xs : MSet A) → length xs ≡ 1 → is-sing xs
-  lenOne-out =
-    elim.f (λ p → E.rec (znots p))
-           (λ x {xs} f p → lenOne-cons x xs p)
-           (λ x y {xs} f → lenOne-swap x y xs)
-           (λ xs → isSetΠ (λ p → is-sing-set xs))
-
-  head : lenOne A → A
-  head (xs , p) = lenOne-out xs p .fst
-
-  -- not definitional due to lack of regularity
-  head-β : (a : A) → head ([ a ] , refl) ≡ a
-  head-β a i = transp (λ _ → A) i a
-
-  lenOnePath : (a b : A) → Type _
-  lenOnePath a b = Path (lenOne A) ([ a ] , refl) ([ b ] , refl)
-
-  lenOnePath-in : {a b : A} → [ a ] ≡ [ b ] → lenOnePath a b
-  lenOnePath-in = Σ≡Prop (λ xs → isSetℕ _ _)
-
-  [-]-inj : {a b : A} → lenOnePath a b → a ≡ b
-  [-]-inj {a = a} {b = b} p = sym (head-β a) ∙ cong head p ∙ head-β b
-
-  [-]-emb : isEmbedding [_]
-  [-]-emb = injEmbedding ϕ trunc λ p → [-]-inj (lenOnePath-in p)
-
-  is-sing-prop : (xs : MSet A) → isProp (is-sing xs)
-  is-sing-prop xs (a , ψ) (b , ξ) = Σ≡Prop (is-sing-pred-prop xs) ([-]-inj (lenOnePath-in (ψ ∙ sym ξ)))
-
-  lenOne-eqv : (xs : MSet A) → (length xs ≡ 1) ≃ (is-sing xs)
-  lenOne-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (is-sing-prop xs) (lenOne-out xs) (λ p i → length (p .snd (~ i)))
+  lem74 : mfst t ≡ [ a ] → Σ B λ b → t ≡ [ (a , b) ]
+  lem74 = TODO

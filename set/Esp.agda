@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split --safe --no-import-sorts --experimental-lossy-unification #-}
+{-# OPTIONS --cubical --exact-split --no-import-sorts --experimental-lossy-unification #-}
 
 module set.Esp where
 
@@ -9,6 +9,7 @@ open import Cubical.Data.Sum
 open import Cubical.Data.Empty
 open import Agda.Primitive
 
+open import set.Prelude
 open import set.MSet
 open import set.MSet.Universal
 
@@ -44,9 +45,9 @@ module _ (M : Type ℓ) {CM : CMon M} where
   hProp^CMon : CMon (M → hProp ℓ)
   CMon.e hProp^CMon = よ (M , isSetM) e
   CMon._⊗_ hProp^CMon = λ p q → λ m → L.∃[ m₁ ∶ M ] L.∃[ m₂ ∶ M ] p m₁ L.⊓ q m₂ L.⊓ ((m ≡ m₁ ⊗ m₂) , isSetM _ _)
-  CMon.unit-⊗ hProp^CMon = {!!}
-  CMon.comm-⊗ hProp^CMon = {!!}
-  CMon.assoc-⊗ hProp^CMon = {!!}
+  CMon.unit-⊗ hProp^CMon = TODO
+  CMon.comm-⊗ hProp^CMon = TODO
+  CMon.assoc-⊗ hProp^CMon = TODO
   CMon.isSetM hProp^CMon = isSetΠ (λ _ → isSetHProp)
 
 module _ {A B : Type ℓ} (f : A ↝ B) where
@@ -89,10 +90,10 @@ module _ {A B C : Type ℓ} where
           h (α , inl b) = (π₁ ⊚ f) (α , b)
                         ≡⟨ refl ⟩
                           (L.∃[ β ∶ MSet (B ⊎ C) ] (f ^♯) (β , α) L.⊓ π₁ (β , b))
-                        ≡⟨ {!!} ⟩
+                        ≡⟨ TODO ⟩
                           f (α , inl b)
                         ∎
-          h (α , inr c) = {!!}
+          h (α , inr c) = TODO
 
 open import set.Monoidal using (mmap ; f ; g)
 
@@ -117,4 +118,4 @@ module _ {A B : Type ℓ} where
 module _ {A B C : Type ℓ} where
 
   _~ : C ↝ (A × B) → (C ⊎ A) ↝ B
-  (p ~) (x , b) = {!!} 
+  (p ~) (x , b) = TODO 

@@ -14,6 +14,7 @@ open import Agda.Primitive
 --   field
 --     Λ : (X : Type ℓ) → S {!T X!} → T (S X)
 
+open import set.Prelude
 open import set.CMon using (CMon)
 open import set.MSet as M
 open import set.MSet.Universal as M

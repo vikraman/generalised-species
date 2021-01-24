@@ -9,37 +9,12 @@ open import Cubical.Data.Sigma
 open import Cubical.Data.Empty
 
 open import set.NSet
+open import set.NSet.Universal
 
--- private
---   variable
---     ℓ ℓ₁ ℓ₂ : Level
---     A : Type ℓ
-
-module _ {ℓ : Level} {A : Type ℓ} where
-
-  -- non-terminating
-  -- code : NSet A → NSet A → Type ℓ
-  -- code [] ys = [] ≡ ys
-  -- code (x :: xs) [] = Lift ⊥
-  -- code (x :: xs) (y :: ys) =
-  --     ((x ≡ y) × code xs ys)
-  --   ⊎ Σ (NSet A) λ zs → code xs (y :: zs) × code ys (x :: zs)
-  -- code (x :: xs) (comm p q i) = {!!}
-  -- code (x :: xs) (trunc ys zs p q i j) = {!!}
-  -- code (comm p q i) ys = {!!}
-  -- code (trunc xs zs p q i j) ys = {!!}
-
-  -- x ∈ (y :: xs) = (x ≡ y) ⊎ Σ (NSet A) λ zs → xs ≡ x :: zs
-
-  _∈'_ : A → NSet A → Type ℓ
-  x ∈' xs = elim.f (Lift ⊥)
-                   (λ y {xs} p → (x ≡ y) ⊎ p)
-                   {!!}
-                   {!!}
-                   xs
-
-  _∈_ : A → NSet A → Type ℓ
-  x ∈ [] = Lift ⊥
-  x ∈ (y :: xs) = (x ≡ y) ⊎ (x ∈ xs)
-  x ∈ comm p q i = {!!}
-  x ∈ trunc xs ys p q i j = {!!}
+private
+  variable
+    ℓ : Level
+    A B : Type ℓ
+    ϕ : isSet A
+    a x : A
+    xs ys : NSet A

@@ -6,6 +6,7 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sigma
 open import Agda.Primitive
+open import set.Prelude
 
 private
   variable
@@ -30,9 +31,6 @@ map : {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} → (A → B) → ℙ A → ℙ B
 map {BSet = BSet} f = (η {ASet = BSet} ∘ f) *
 
 open import Cubical.HITs.PropositionalTruncation
-
-postulate
-  TODO : ∀ {ℓ} {A : Type ℓ} → A
 
 よ* : {ASet@(A , ϕ) : hSet ℓ} → (よ ASet) * ≡ idfun (ℙ A)
 よ* = funExt λ f → funExt λ a → ⇔toPath (rec (f a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ f (p i) ⟩) i0 ψ }) (λ ξ → ∣ a , refl , ξ ∣)

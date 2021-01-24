@@ -1,10 +1,11 @@
-{-# OPTIONS --cubical --exact-split --safe #-}
+{-# OPTIONS --cubical --exact-split #-}
 
 module set.Iso where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 
+open import set.Prelude
 open import set.MSet as M
 open import set.NSet as N
 open import set.MSet.Universal as M
@@ -24,11 +25,11 @@ M≃N {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
         g : NSet A → MSet A
         g = g-univ.f♯
         f-g-htpy : idfun (NSet A) ≡ f ∘ g
-        f-g-htpy = {!!}
+        f-g-htpy = TODO
         f-g : (xs : NSet A) → f (g xs) ≡ xs
         f-g xs i = f-g-htpy (~ i) xs
         g-f : (xs : MSet A) → g (f xs) ≡ xs
-        g-f = {!!}
+        g-f = TODO
 
 _ : (M≃N .fst) (1 :: 2 :: 3 :: []) ≡ (1 :: 2 :: 3 :: [])
 _ = refl
@@ -44,11 +45,11 @@ F≃M {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
         g : MSet A → Free A
         g = g-univ.f♯
         f-g-htpy : idfun (MSet A) ≡ f ∘ g
-        f-g-htpy = {!!}
+        f-g-htpy = TODO
         f-g : (xs : MSet A) → f (g xs) ≡ xs
         f-g xs i = f-g-htpy (~ i) xs
         g-f : (xs : Free A) → g (f xs) ≡ xs
-        g-f = {!!}
+        g-f = TODO
 
 _ : F≃M .fst (η 1 ⊗ (η 2 ⊗ (η 3 ⊗ η 4))) ≡ 1 :: 2 :: 3 :: 4 :: []
 _ = refl
