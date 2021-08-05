@@ -16,7 +16,7 @@ open import Cubical.Functions.Logic public
 open import Cubical.Foundations.Powerset public
 
 PSet : hSet ℓ → hSet (ℓ-suc ℓ)
-PSet (A , ϕ) = ℙ A , powersets-are-sets
+PSet (A , ϕ) = ℙ A , isSetℙ
 
 η : {ASet@(A , ϕ) : hSet ℓ} → A → ℙ A
 η {ASet = (A , ϕ)} x = λ y → (x ≡ y) , ϕ x y

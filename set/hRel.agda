@@ -20,7 +20,7 @@ _⇸_ : Type ℓ → Type ℓ → Type (ℓ-suc ℓ)
 A ⇸ B = A → ℙ B
 
 isSet⇸ : {A B : Type ℓ} → isSet (A ⇸ B)
-isSet⇸ = isSetΠ (λ _ → powersets-are-sets)
+isSet⇸ = isSetΠ (λ _ → isSetℙ)
 
 id : (ASet@(A , ϕ) : hSet ℓ) → A ⇸ A
 id = よ
@@ -102,7 +102,7 @@ _⊕_ : (A B : Type ℓ) → Type ℓ
 A ⊕ B = A ⊎ B
 
 _⊕₀_ : (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) → hSet ℓ
-(A , ϕ) ⊕₀ (B , ψ) = A ⊕ B , isSetSum ϕ ψ
+(A , ϕ) ⊕₀ (B , ψ) = A ⊕ B , isSet⊎ ϕ ψ
 
 module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) DSet@(D , χ) : hSet ℓ} where
 

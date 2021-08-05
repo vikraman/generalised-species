@@ -7,6 +7,7 @@ open import Cubical.Foundations.Everything hiding (id ; curry ; uncurry)
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum
 open import Cubical.Data.Empty
+open import Cubical.Data.Unit
 open import Agda.Primitive
 
 open import set.Prelude
@@ -32,9 +33,9 @@ open import set.CMon using (CMon)
 import Cubical.Functions.Logic as L
 
 hPropCMon : ∀ {ℓ} → CMon (hProp ℓ)
-CMon.e hPropCMon = Lift (L.⊤ .fst) , λ { (lift _) (lift _) → refl }
+CMon.e hPropCMon = Unit* , λ { tt* tt* → refl }
 CMon._⊗_ hPropCMon = L._⊓_
-CMon.unit-⊗ hPropCMon = λ _ → L.⇔toPath snd λ x → lift _ , x
+CMon.unit-⊗ hPropCMon = λ { X → L.⇔toPath snd λ x → tt* , x }
 CMon.comm-⊗ hPropCMon = L.⊓-comm
 CMon.assoc-⊗ hPropCMon = L.⊓-assoc
 CMon.isSetM hPropCMon = isSetHProp
