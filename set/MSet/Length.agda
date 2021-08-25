@@ -36,6 +36,11 @@ disj-cons-nil p = disj-nil-cons (sym p)
 
 open import set.MSet.Nat using (length) public
 
+length-++ : (x y : MSet A) → length (x ++ y) ≡ length x + length y
+length-++ x y =
+  elimProp.f {B = λ xs → length (xs ++ y) ≡ length xs + length y}
+             (isSetℕ _ _) refl (λ a {xs} p → cong suc p) x
+
 lenZero-out : (xs : MSet A) → length xs ≡ 0 → [] ≡ xs
 lenZero-out = elimProp.f (isPropΠ λ _ → trunc _ _)
                          (λ _ → refl)

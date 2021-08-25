@@ -6,6 +6,7 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sigma
 open import Cubical.Data.Nat
+open import Cubical.Data.Sum
 
 open import set.Prelude
 open import set.MSet
@@ -26,14 +27,40 @@ module _ {ϕ : isSet A} (a b : A) where
   lem71 : ([ a ] ≡ [ b ]) ≃ (a ≡ b)
   lem71 = propBiimpl→Equiv (trunc _ _) (ϕ _ _) (λ p → [-]-inj {ϕ = ϕ} (lenOnePath-in {ϕ = ϕ} p)) (cong [_])
 
+++-nil-out : xs ++ ys ≡ [] → (xs ≡ []) × (ys ≡ [])
+++-nil-out {xs = xs} {ys = ys} p =
+  let u = m+n≡0→m≡0×n≡0 {m = length xs} {n = length ys} (sym (length-++ xs ys) ∙ cong length p)
+  in sym (lenZero-out xs (u .fst)) , sym (lenZero-out ys (u .snd))
+
+++-nil-in : (xs ≡ []) × (ys ≡ []) → xs ++ ys ≡ []
+++-nil-in (p , q) i = p i ++ q i
+
+++-nil-eqv : (xs ++ ys ≡ []) ≃ ((xs ≡ []) × (ys ≡ []))
+++-nil-eqv =
+  propBiimpl→Equiv (trunc _ _) (isProp× (trunc _ _) (trunc _ _)) ++-nil-out ++-nil-in
+
+m+n≡1→m≡1×n≡0⊎m≡0×n≡1 : {m n : ℕ} → m + n ≡ 1 → ((m ≡ 1) × (n ≡ 0)) ⊎ ((m ≡ 0) × (n ≡ 1))
+m+n≡1→m≡1×n≡0⊎m≡0×n≡1 {zero} {n} p = inr (refl , p)
+m+n≡1→m≡1×n≡0⊎m≡0×n≡1 {suc m} {n} p =
+  let q = injSuc {m = m + n} {n = 0} p
+      r = m+n≡0→m≡0×n≡0 {m = m} {n = n} q
+  in inl (cong suc (r .fst) , r .snd)
+
+++-sing-out : xs ++ ys ≡ [ a ] → ((xs ≡ [ a ]) × (ys ≡ [])) ⊎ ((xs ≡ []) × (ys ≡ [ a ]))
+++-sing-out {xs = xs} {ys = ys} p =
+  let u = m+n≡1→m≡1×n≡0⊎m≡0×n≡1 {m = length xs} {n = length ys} (sym (length-++ xs ys) ∙ cong length p)
+  in rec (uncurry (λ q r → let s = lenZero-out ys r in inl (sym (unitr-++ xs) ∙ cong (xs ++_) s ∙ p , sym s)))
+         (uncurry (λ q r → let s = lenZero-out xs q in inr (sym s , cong (_++ ys) s ∙ p)))
+         u
+
+++-sing-in : ((xs ≡ [ a ]) × (ys ≡ [])) ⊎ ((xs ≡ []) × (ys ≡ [ a ])) → xs ++ ys ≡ [ a ]
+++-sing-in = rec (uncurry (λ p q i → p i ++ q i)) (uncurry (λ p q i → p i ++ q i))
+
 μ : MSet (MSet A) → MSet A
 μ = univ.f♯ (MSetCMon _) (idfun (MSet _))
 
 μ-cons : (x : MSet A) (xs : MSet (MSet A)) → μ (x :: xs) ≡ x ++ μ xs
 μ-cons = univ.f♯-cons (MSetCMon _) (idfun (MSet _))
-
-length-++ : (x y : MSet A) → length (x ++ y) ≡ length x + length y
-length-++ x y = elimProp.f {B = λ xs → length (xs ++ y) ≡ length xs + length y} (isSetℕ _ _) refl TODO x
 
 mlen : MSet (MSet A) → MSet ℕ
 mlen = univ.f♯ (MSetCMon _) ([_] ∘ length)
