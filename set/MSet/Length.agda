@@ -134,3 +134,12 @@ module _ {ϕ : isSet A} where
 
   lenOne-eqv : (xs : MSet A) → (length xs ≡ 1) ≃ (is-sing xs)
   lenOne-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (is-sing-prop xs) (lenOne-out xs) (λ p i → length (p .snd (~ i)))
+
+  lenOne-set-eqv : lenOne A ≃ A
+  lenOne-set-eqv = isoToEquiv (iso head g head-β g-f)
+    where g : A → lenOne A
+          g a = [ a ] , refl
+          g-f : (as : lenOne A) → g (head as) ≡ as
+          g-f (as , ϕ) =
+            let (a , ψ) = lenOne-out as ϕ
+            in Σ≡Prop (λ xs → isSetℕ _ _) {u = ([ a ] , refl)} {v = (as , ϕ)} ψ
