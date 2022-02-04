@@ -2,3 +2,5 @@ name: generalised-species
 include: .
 depend:
   cubical
+  hott-core
+  hott-theorems
