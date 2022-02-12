@@ -36,21 +36,20 @@ module _ {i} {A : Type i} where
       _♯ : SMFunctor (FSMG A) M
       SMFunctor.f _♯ = f♯
       SMFunctor.f-I _♯ = idp
-      SMFunctor.f-⊗ _♯ = idp
-      SMFunctor.f-α _♯ = ∙-unit-r _ ∙ R.f-α-β
-      SMFunctor.f-Λ _♯ = R.f-Λ-β
-      SMFunctor.f-ρ _♯ = R.f-ρ-β
-      SMFunctor.f-β _♯ = ∙-unit-r _ ∙ R.f-β-β
+      SMFunctor.f-⊗ _♯ X Y = idp
+      SMFunctor.f-α _♯ X Y Z = ∙-unit-r _ ∙ R.f-α-β
+      SMFunctor.f-Λ _♯ X = R.f-Λ-β
+      SMFunctor.f-ρ _♯ X = R.f-ρ-β
+      SMFunctor.f-β _♯ X Y = ∙-unit-r _ ∙ R.f-β-β
 
     module _ (f : A → M) (H : SMFunctor (FSMG A) M) (H-η : (H .SMFunctor.f) ∘ η == f) where
       f♯-uniq : (f ♯) == H
-      f♯-uniq = sm-functor= (f ♯) H (! (λ= p)) TODO TODO
+      f♯-uniq = sm-functor= (FSMG A) M (f ♯) H (! (λ= p)) TODO TODO
         where p : (X : FSMG A) → SMFunctor.f H X == SMFunctor.f (f ♯) X
-              p = FSMGElimSet.f (app= H-η) (SMFunctor.f-I H) (λ {X} {Y} X* Y* → SMFunctor.f-⊗ H {X} {Y} ∙ ap (M._⊗ _) X* ∙ ap (_ M.⊗_) Y*) TODO TODO TODO TODO
+              p = FSMGElimSet.f (app= H-η) (SMFunctor.f-I H) (λ {X} {Y} X* Y* → SMFunctor.f-⊗ H X Y ∙ ap (M._⊗ _) X* ∙ ap (_ M.⊗_) Y*) TODO TODO TODO TODO
 
     FSMG-Universal : SMFunctor (FSMG A) M ≃ (A → M)
     FSMG-Universal = equiv (λ F → F .SMFunctor.f ∘ η) (λ f → f ♯) (λ _ → idp) h
       where h : (F : SMFunctor (FSMG A) M) → ((F .SMFunctor.f ∘ η) ♯) == F
-            h F = sm-functor= ((S.f ∘ η) ♯) F TODO TODO TODO
+            h F = sm-functor= (FSMG A) M ((S.f ∘ η) ♯) F TODO TODO TODO
               where module S = SMFunctor F
- 

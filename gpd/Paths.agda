@@ -5,7 +5,7 @@ open import lib.Function
 open import lib.PathOver
 open import lib.PathFunctor
 open import lib.PathGroupoid
-open import lib.Funext hiding (λ=-∙)
+open import lib.Funext
 
 module gpd.Paths where
 

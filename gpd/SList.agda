@@ -24,6 +24,10 @@ module _ {i} where
 
       instance trunc : has-level 1 (SList A)
 
+    -- pattern [_] x = x :: nil
+    [_] : A → SList A
+    [ x ] = x :: nil
+
     module SListElim {j} {P : SList A → Type j}
       (nil* : P nil)
       (_::*_ : (x : A) {xs : SList A} → (xs* : P xs) → P (x :: xs))
@@ -48,7 +52,7 @@ module _ {i} where
       postulate
         f-swap-β : {x y : A} {xs : SList A} → apd f (swap x y xs) == swap* x y (f xs)
 
-    module SListElimSet {j} {P : SList A → Type j} {{trunc* : {X : SList A} → has-level 0 (P X)}}
+    module SListElimSet {j} {P : SList A → Type j} ⦃ trunc* : {X : SList A} → has-level 0 (P X) ⦄
       (nil* : P nil)
       (_::*_ : (x : A) {xs : SList A} → (xs* : P xs) → P (x :: xs))
       (swap* : (x y : A) {xs : SList A} (xs* : P xs)
@@ -59,6 +63,14 @@ module _ {i} where
         f = SListElim.f {P = P} nil* (λ x p → x ::* p) swap* 
             (λ x y z xs* → set-↓-has-all-paths-↓) (λ x y z xs* → set-↓-has-all-paths-↓)
             (raise-level 0 trunc*)
+
+    module SListElimProp {j} {P : SList A → Type j} ⦃ trunc* : {X : SList A} → has-level -1 (P X) ⦄
+      (nil* : P nil)
+      (_::*_ : (x : A) {xs : SList A} → (xs* : P xs) → P (x :: xs))
+      where
+
+        f : (xs : SList A) → P xs
+        f = SListElimSet.f {P = P} ⦃ raise-level -1 trunc* ⦄ nil* _::*_ (λ x y xs* → prop-has-all-paths-↓)
 
     module SListRec {j} {P : Type j}
       (nil* : P)
