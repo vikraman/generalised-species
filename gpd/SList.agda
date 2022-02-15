@@ -16,11 +16,11 @@ module _ {i} where
 
       swap : (x y : A) (xs : SList A) → x :: y :: xs == y :: x :: xs
 
+      swap² : (x y : A) (xs : SList A) → swap x y xs ∙ swap y x xs == idp
+
       ⬡ : (x y z : A) (xs : SList A)
         → swap x y (z :: xs) ∙ ap (y ::_) (swap x z xs) ∙ swap y z (x :: xs)
         == ap (x ::_) (swap y z xs) ∙ swap x z (y :: xs) ∙ ap (z ::_) (swap x y xs)
-
-      swap² : (x y : A) (xs : SList A) → swap x y xs ∙ swap y x xs == idp
 
       instance trunc : has-level 1 (SList A)
 
@@ -36,9 +36,9 @@ module _ {i} where
       (swap²* : (x y z : A) {xs : SList A} (xs* : P xs)
               → (swap* x y xs* ∙ᵈ swap* y x xs*) == idp [ (λ p → (x ::* (y ::* xs*)) == (x ::* (y ::* xs*)) [ P ↓ p ]) ↓ swap² x y xs ])
       (⬡* : (x y z : A) {xs : SList A} (xs* : P xs)
-          → let p1 = swap* x y (z ::* xs*) ∙ᵈ ($ (y ::*_) (swap* x z xs*) ∙ᵈ swap* y z (x ::* xs*)) in
-            let p2 = ($ (x ::*_) (swap* y z xs*) ∙ᵈ (swap* x z (y ::* xs*) ∙ᵈ $ (z ::*_) (swap* x y xs*))) in
-            p1 == p2 [ (λ p → (x ::* (y ::* (z ::* xs*))) == (z ::* (y ::* (x ::* xs*))) [ P ↓ p ]) ↓ ⬡ x y z xs ])
+          → let p1 = swap* x y (z ::* xs*) ∙ᵈ ($ (y ::*_) (swap* x z xs*) ∙ᵈ swap* y z (x ::* xs*))
+                p2 = $ (x ::*_) (swap* y z xs*) ∙ᵈ (swap* x z (y ::* xs*) ∙ᵈ $ (z ::*_) (swap* x y xs*))
+             in p1 == p2 [ (λ p → (x ::* (y ::* (z ::* xs*))) == (z ::* (y ::* (x ::* xs*))) [ P ↓ p ]) ↓ ⬡ x y z xs ])
       (trunc* : {xs : SList A} → has-level 1 (P xs))
       where
 
@@ -80,11 +80,26 @@ module _ {i} where
       (swap²* : (x y z : A) (xs* : P)
               → (swap* x y xs* ∙ swap* y x xs*) == idp)
       (⬡* : (x y z : A) (xs* : P)
-          → let p1 = swap* x y (z ::* xs*) ∙ (ap (y ::*_) (swap* x z xs*) ∙ swap* y z (x ::* xs*)) in
-            let p2 = (ap (x ::*_) (swap* y z xs*) ∙ (swap* x z (y ::* xs*) ∙ ap (z ::*_) (swap* x y xs*))) in
-            p1 == p2)
+          → let p1 = swap* x y (z ::* xs*) ∙ (ap (y ::*_) (swap* x z xs*) ∙ swap* y z (x ::* xs*))
+                p2 = (ap (x ::*_) (swap* y z xs*) ∙ (swap* x z (y ::* xs*) ∙ ap (z ::*_) (swap* x y xs*)))
+             in p1 == p2)
       (trunc* : has-level 1 P)
       where
 
+      module Elim =
+        SListElim {P = λ _ → P}
+          nil*
+          (λ x p → x ::* p)
+          (λ x y {xs} xs* → ↓-cst-in (swap* x y xs*))
+          (λ x y z {xs} xs* → ↓-cst-in-∙ (swap x y xs) (swap y x xs) (swap* x y xs*) (swap* y x xs*)
+                            !◃ ↓-cst-in2 (swap²* x y z xs*))
+          (λ x y z {xs} xs* → TODO
+                            -- !◃ ↓-cst-in2 (⬡* x y z xs*)
+                            )
+          trunc*
+
       f : SList A → P
-      f = SListElim.f {P = λ _ → P} nil* (λ x p → x ::* p) (λ x y {xs} xs* → ↓-cst-in (swap* x y xs*)) TODO TODO trunc*
+      f = Elim.f
+
+      f-swap-β : {x y : A} {xs : SList A} → ap f (swap x y xs) == swap* x y (f xs)
+      f-swap-β = apd=cst-in Elim.f-swap-β

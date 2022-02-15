@@ -22,7 +22,7 @@ $ : ∀ {i} {j}
   → {f : A → A} (g : {x : A} → P x → P (f x))
   → {p : x == y}
   → u == v [ P ↓ p ] → g u == g v [ P ↓ ap f p ]
-$ g {idp} s = ap g s
+$ {P = P} {f = f} g {p} s = ↓-ap-in P f (ap↓ g s)
 
 λ=-idp : ∀ {i} {j} {A : Type i} {P : A → Type j} {f : Π A P}
        → λ= {f = f} {g = f} (λ x → idp {a = f x}) == idp
@@ -32,4 +32,15 @@ $ g {idp} s = ap g s
        → λ= α ∙ λ= β == λ= (λ x → α x ∙ β x)
 λ=-∙' {f = f} {g = g} α β =
     λ=-η (λ= α ∙ λ= β)
-  ∙ ap λ= (λ= λ x → ap-∙ (λ γ → γ x) (λ= α) (λ= β) ∙ ap2 _∙_ (app=-β α x) (app=-β β x))
+  ∙ ap λ= (λ= λ x → ap-∙ (λ γ → γ x) (λ= α) (λ= β)
+                    ∙ ap2 _∙_ (app=-β α x) (app=-β β x))
+
+λ=-∙∙' : ∀ {i} {j} {A : Type i} {P : A → Type j} {e f g h : Π A P} (α : e ∼ f) (β : f ∼ g) (γ : g ∼ h)
+       → λ= α ∙ λ= β ∙ λ= γ == λ= (λ x → α x ∙ β x ∙ γ x)
+λ=-∙∙' {f = f} {g = g} {h = h} α β γ =
+    λ=-η (λ= α ∙ λ= β ∙ λ= γ)
+  ∙ ap λ= (λ= λ x → ap-∙∙ (λ δ → δ x) (λ= α) (λ= β) (λ= γ)
+                    ∙ ap3 (λ p q r → p ∙ q ∙ r) (app=-β α x) (app=-β β x) (app=-β γ x))
+
+inv-∙ : ∀ {i} {A : Type i} {x y : A} (p : x == y) (q : y == x) → p ∙ q == idp → p == ! q
+inv-∙ p idp α = ! (∙-unit-r p) ∙ α
