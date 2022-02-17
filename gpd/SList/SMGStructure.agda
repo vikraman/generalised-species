@@ -74,94 +74,104 @@ module _ {i} {A : Type i} where
 
   ++-r-swap-β : {x y : A} {xs ys : SList A}
               → ap (_++ ys) (swap x y xs) == swap x y (xs ++ ys)
-  ++-r-swap-β {x = x} {y} {xs} {ys} = TODO
+  ++-r-swap-β {x = x} {y} {xs} {ys} =
+      ap (_++ ys) (swap x y xs)
+    =⟨ ap-∘ (λ f → f ys) _++_ (swap x y xs)  ⟩
+      ap (λ f → f ys) (ap _++_ (swap x y xs))
+    =⟨ ap (ap (λ f → f ys)) ++-swap-β ⟩
+      ap (λ f → f ys) (λ= (λ ys → swap x y (xs ++ ys)))
+    =⟨ idp ⟩
+      app= (λ= (λ ys → swap x y (xs ++ ys))) ys
+    =⟨ app=-β (λ ys → swap x y (xs ++ ys)) ys ⟩
+      swap x y (xs ++ ys)
+    =∎
 
-  -- module ++-α (xs ys zs : SList A) where
-  --   f : (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
-  --   f =
-  --     SListElimSet.f {P = λ xs* → (xs* ++ ys) ++ zs == xs* ++ (ys ++ zs)} ⦃ one-paths-level ⦄
-  --       idp (λ x {xs*} p → ap (x ::_) p)
-  --       (λ x y {xs*} p → TODO)
-  --       xs
+  module ++-α (xs ys zs : SList A) where
+    f : (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
+    f =
+      SListElimSet.f {P = λ xs* → (xs* ++ ys) ++ zs == xs* ++ (ys ++ zs)} ⦃ one-paths-level ⦄
+        idp (λ x {xs*} p → ap (x ::_) p)
+        (λ x y {xs*} p → TODO)
+        xs
 
-  -- module ++-Λ (xs : SList A) where
-  --   f : nil ++ xs == xs
-  --   f =
-  --     SListElimSet.f {P = λ ys → nil ++ ys == ys} ⦃ one-paths-level ⦄
-  --       idp (λ x {xs} p → ap (x ::_) p)
-  --       (λ x y {xs} p → TODO)
-  --       xs
+  module ++-Λ (xs : SList A) where
+    f : nil ++ xs == xs
+    f =
+      SListElimSet.f {P = λ ys → nil ++ ys == ys} ⦃ one-paths-level ⦄
+        idp (λ x {xs} p → ap (x ::_) p)
+        (λ x y {xs} p → TODO)
+        xs
 
-  -- module ++-ρ (xs : SList A) where
-  --   f : xs ++ nil == xs
-  --   f =
-  --     SListElimSet.f {P = λ ys → ys ++ nil == ys} ⦃ one-paths-level ⦄
-  --       idp (λ x {xs} p → ap (x ::_) p)
-  --       (λ x y {xs} p → TODO)
-  --       xs
+  module ++-ρ (xs : SList A) where
+    f : xs ++ nil == xs
+    f =
+      SListElimSet.f {P = λ ys → ys ++ nil == ys} ⦃ one-paths-level ⦄
+        idp (λ x {xs} p → ap (x ::_) p)
+        (λ x y {xs} p → TODO)
+        xs
 
-  -- module ++-β (xs ys : SList A) where
+  module ++-β (xs ys : SList A) where
 
-  --   ++-:: : (x : A) (xs : SList A) → x :: xs == xs ++ [ x ]
-  --   ++-:: x =
-  --     SListElimSet.f {P = λ ys → x :: ys == ys ++ [ x ]} ⦃ one-paths-level ⦄
-  --       idp
-  --       (λ y {ys} p → swap x y ys ∙ ap (y ::_) p)
-  --       (λ y z {xs} xs* → TODO)
+    ++-:: : (x : A) (xs : SList A) → x :: xs == xs ++ [ x ]
+    ++-:: x =
+      SListElimSet.f {P = λ ys → x :: ys == ys ++ [ x ]} ⦃ one-paths-level ⦄
+        idp
+        (λ y {ys} p → swap x y ys ∙ ap (y ::_) p)
+        (λ y z {xs} xs* → TODO)
 
-  --   f : xs ++ ys == ys ++ xs
-  --   f =
-  --     SListElimSet.f {P = λ zs → zs ++ ys == ys ++ zs} ⦃ one-paths-level ⦄
-  --       (! (++-ρ.f ys))
-  --       (λ x {xs} p → ap (x ::_) p ∙ ap (_++ xs) (++-:: x ys) ∙ ++-α.f ys [ x ] xs)
-  --       (λ x y {xs} p → TODO)
-  --       xs
+    f : xs ++ ys == ys ++ xs
+    f =
+      SListElimSet.f {P = λ zs → zs ++ ys == ys ++ zs} ⦃ one-paths-level ⦄
+        (! (++-ρ.f ys))
+        (λ x {xs} p → ap (x ::_) p ∙ ap (_++ xs) (++-:: x ys) ∙ ++-α.f ys [ x ] xs)
+        (λ x y {xs} p → TODO)
+        xs
 
-  -- module ++-▽ (xs ys : SList A) where
+  module ++-▽ (xs ys : SList A) where
 
-  --   f-nil-ys : ++-α.f nil nil ys ∙ ap (nil ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f nil)
-  --   f-nil-ys =
-  --     SListElimProp.f {P = λ ws → ap (nil ++_) (++-Λ.f ws) == idp}  ⦃ two-paths-level ⦄
-  --       idp
-  --       (λ x {xs} p →
-  --         ap (nil ++_) (++-Λ.f (x :: xs)) =⟨ idp ⟩
-  --         ap (nil ++_) (ap (x ::_) (++-Λ.f xs)) =⟨ ∘-ap (nil ++_) (x ::_) (++-Λ.f xs) ⟩
-  --         ap (λ zs → nil ++ x :: zs) (++-Λ.f xs) =⟨ idp ⟩
-  --         ap (x ::_) (++-Λ.f xs) =⟨ ap-∘ (x ::_) (nil ++_) (++-Λ.f xs) ⟩
-  --         ap (x ::_) (ap (nil ++_) (++-Λ.f xs)) =⟨ ap (ap (x ::_)) p ⟩
-  --         ap (x ::_) idp =∎)
-  --       ys
+    f-nil-ys : ++-α.f nil nil ys ∙ ap (nil ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f nil)
+    f-nil-ys =
+      SListElimProp.f {P = λ ws → ap (nil ++_) (++-Λ.f ws) == idp}  ⦃ two-paths-level ⦄
+        idp
+        (λ x {xs} p →
+          ap (nil ++_) (++-Λ.f (x :: xs)) =⟨ idp ⟩
+          ap (nil ++_) (ap (x ::_) (++-Λ.f xs)) =⟨ ∘-ap (nil ++_) (x ::_) (++-Λ.f xs) ⟩
+          ap (λ zs → nil ++ x :: zs) (++-Λ.f xs) =⟨ idp ⟩
+          ap (x ::_) (++-Λ.f xs) =⟨ ap-∘ (x ::_) (nil ++_) (++-Λ.f xs) ⟩
+          ap (x ::_) (ap (nil ++_) (++-Λ.f xs)) =⟨ ap (ap (x ::_)) p ⟩
+          ap (x ::_) idp =∎)
+        ys
 
-  --   f-::-ys : (x : A) {xs : SList A}
-  --           → ++-α.f xs nil ys ∙ ap (xs ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f xs)
-  --           → ++-α.f (x :: xs) nil ys ∙ ap ((x :: xs) ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f (x :: xs))
-  --   f-::-ys x {xs} p =
-  --     SListElimProp.f {P = λ ws → ++-α.f (x :: xs) nil ws ∙ ap ((x :: xs) ++_) (++-Λ.f ws) == ap (_++ ws) (++-ρ.f (x :: xs))} ⦃ two-paths-level ⦄
-  --       (++-α.f (x :: xs) nil nil ∙ idp =⟨ TODO ⟩
-  --        ap (_++ nil) (++-ρ.f (x :: xs)) =∎)
-  --       TODO
-  --       ys
+    f-::-ys : (x : A) {xs : SList A}
+            → ++-α.f xs nil ys ∙ ap (xs ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f xs)
+            → ++-α.f (x :: xs) nil ys ∙ ap ((x :: xs) ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f (x :: xs))
+    f-::-ys x {xs} p =
+      SListElimProp.f {P = λ ws → ++-α.f (x :: xs) nil ws ∙ ap ((x :: xs) ++_) (++-Λ.f ws) == ap (_++ ws) (++-ρ.f (x :: xs))} ⦃ two-paths-level ⦄
+        (++-α.f (x :: xs) nil nil ∙ idp =⟨ TODO ⟩
+         ap (_++ nil) (++-ρ.f (x :: xs)) =∎)
+        TODO
+        ys
 
-  --   f : ++-α.f xs nil ys ∙ ap (xs ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f xs)
-  --   f =
-  --     SListElimProp.f {P = λ zs → ++-α.f zs nil ys ∙ ap (zs ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f zs)} ⦃ two-paths-level ⦄
-  --       f-nil-ys
-  --       f-::-ys
-  --       xs
+    f : ++-α.f xs nil ys ∙ ap (xs ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f xs)
+    f =
+      SListElimProp.f {P = λ zs → ++-α.f zs nil ys ∙ ap (zs ++_) (++-Λ.f ys) == ap (_++ ys) (++-ρ.f zs)} ⦃ two-paths-level ⦄
+        f-nil-ys
+        f-::-ys
+        xs
 
-  -- module ++-⬠ (ws xs ys zs : SList A) where
+  module ++-⬠ (ws xs ys zs : SList A) where
 
-  --   f : ++-α.f (ws ++ xs) ys zs ∙ ++-α.f ws xs (ys ++ zs)
-  --     == ap (_++ zs) (++-α.f ws xs ys) ∙ ++-α.f ws (xs ++ ys) zs ∙ ap (ws ++_) (++-α.f xs ys zs)
-  --   f = TODO
+    f : ++-α.f (ws ++ xs) ys zs ∙ ++-α.f ws xs (ys ++ zs)
+      == ap (_++ zs) (++-α.f ws xs ys) ∙ ++-α.f ws (xs ++ ys) zs ∙ ap (ws ++_) (++-α.f xs ys zs)
+    f = TODO
 
-  -- module ++-⬡ (xs ys zs : SList A) where
+  module ++-⬡ (xs ys zs : SList A) where
 
-  --   f : ++-α.f xs ys zs ∙ ++-β.f xs (ys ++ zs) ∙ ++-α.f ys zs xs
-  --     == ap (_++ zs) (++-β.f xs ys) ∙ ++-α.f ys xs zs ∙ ap (ys ++_) (++-β.f xs zs)
-  --   f = TODO
+    f : ++-α.f xs ys zs ∙ ++-β.f xs (ys ++ zs) ∙ ++-α.f ys zs xs
+      == ap (_++ zs) (++-β.f xs ys) ∙ ++-α.f ys xs zs ∙ ap (ys ++_) (++-β.f xs zs)
+    f = TODO
 
-  -- FIXME: this takes too long to typecheck
+  -- -- FIXME: this takes too long to typecheck
   -- instance
   --   SList-SMGStructure : SMGStructure (SList A) ⦃ ? ⦄
   --   SMGStructure.I SList-SMGStructure = nil
