@@ -59,10 +59,16 @@ module _ {i} where
              → (x ::* (y ::* xs*)) == (y ::* (x ::* xs*)) [ P ↓ swap x y xs ])
       where
 
+        private module F = SListElim {P = P} nil* (λ x p → x ::* p) swap*
+                                     (λ x y z xs* → set-↓-has-all-paths-↓)
+                                     (λ x y z xs* → set-↓-has-all-paths-↓)
+                                     (raise-level 0 trunc*)
+
         f : (xs : SList A) → P xs
-        f = SListElim.f {P = P} nil* (λ x p → x ::* p) swap* 
-            (λ x y z xs* → set-↓-has-all-paths-↓) (λ x y z xs* → set-↓-has-all-paths-↓)
-            (raise-level 0 trunc*)
+        f = F.f
+
+        f-swap-β : {x y : A} {xs : SList A} → apd f (swap x y xs) == swap* x y (f xs)
+        f-swap-β = F.f-swap-β
 
     module SListElimProp {j} {P : SList A → Type j} ⦃ trunc* : {X : SList A} → has-level -1 (P X) ⦄
       (nil* : P nil)
@@ -103,3 +109,49 @@ module _ {i} where
 
       f-swap-β : {x y : A} {xs : SList A} → ap f (swap x y xs) == swap* x y (f xs)
       f-swap-β = apd=cst-in Elim.f-swap-β
+
+    module SListElimPaths {j} {P : SList A → Type j} ⦃ trunc* : {X : SList A} → has-level 1 (P X) ⦄
+      (f g : (xs : SList A) → P xs)
+      (nil* : f nil == g nil)
+      (_::*_ : (x : A) {xs : SList A} → f xs == g xs → f (x :: xs) == g (x :: xs))
+      (swap* : (x y : A) {xs : SList A} (xs* : f xs == g xs)
+             → (x ::* (y ::* xs*)) == (y ::* (x ::* xs*)) [ (λ z → f z == g z) ↓ swap x y xs ])
+      where
+
+      private module F = SListElimSet nil* _::*_ swap*
+
+      elim : (xs : SList A) → f xs == g xs
+      elim = F.f
+
+      elim-swap-β : {x y : A} {xs : SList A} → apd elim (swap x y xs) == swap* x y (elim xs)
+      elim-swap-β = F.f-swap-β
+
+    module SListElimPathsSet {j} {P : SList A → Type j} ⦃ trunc* : {X : SList A} → has-level 0 (P X) ⦄
+      (f g : (xs : SList A) → P xs)
+      (nil* : f nil == g nil)
+      (_::*_ : (x : A) {xs : SList A} → f xs == g xs → f (x :: xs) == g (x :: xs))
+      where
+
+      elim : (xs : SList A) → f xs == g xs
+      elim = SListElimProp.f nil* _::*_
+
+    module SListRecPaths {j} {P : Type j} ⦃ trunc* : has-level 1 P ⦄
+      (f g : SList A → P)
+      (nil* : f nil == g nil)
+      (_::*_ : (x : A) {xs : SList A} (p : f xs == g xs)
+             → f (x :: xs) == g (x :: xs))
+      (swap* : (x y : A) {xs : SList A} (xs* : f xs == g xs)
+             → (x ::* (y ::* xs*)) == (y ::* (x ::* xs*)) [ (λ z → f z == g z) ↓ swap x y xs ])
+      where
+
+      rec : (xs : SList A) → f xs == g xs
+      rec = SListElimPaths.elim f g nil* _::*_ swap*
+
+    module SListRecPathsSet {j} {P : Type j} ⦃ trunc* : has-level 0 P ⦄
+      (f g : SList A → P)
+      (nil* : f nil == g nil)
+      (_::*_ : (x : A) {xs : SList A} (p : f xs == g xs) → f (x :: xs) == g (x :: xs))
+      where
+
+      rec : (xs : SList A) → f xs == g xs
+      rec = SListElimPathsSet.elim f g nil* _::*_

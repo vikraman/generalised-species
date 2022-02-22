@@ -13,6 +13,7 @@ open import lib.Equivalence public
 open import lib.Equivalence2 public
 open import lib.Funext public
 open import lib.types.Pi public
+open import lib.types.Paths public
 
 open import gpd.Paths public
 

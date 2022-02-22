@@ -44,3 +44,16 @@ $ {P = P} {f = f} g {p} s = ↓-ap-in P f (ap↓ g s)
 
 inv-∙ : ∀ {i} {A : Type i} {x y : A} (p : x == y) (q : y == x) → p ∙ q == idp → p == ! q
 inv-∙ p idp α = ! (∙-unit-r p) ∙ α
+
+module _ {i} {A : Type i} where
+
+  infixr 80 _∙'ᵣ_
+  infixl 80 _∙'ₗ_
+
+  _∙'ᵣ_ : {x y z : A} {p p' : x == y} (α : p == p') (q : y == z)
+        → p ∙' q == p' ∙' q
+  _∙'ᵣ_ {p = p} {p' = p'} α idp = α
+
+  _∙'ₗ_ : {x y z : A} {q q' : y == z} (p : x == y) (β : q == q')
+        → p ∙' q == p ∙' q'
+  _∙'ₗ_ {q = q} {q' = q'} idp β = ∙'-unit-l q ∙ β ∙ ! (∙'-unit-l q')
