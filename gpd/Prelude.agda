@@ -5,7 +5,7 @@ module gpd.Prelude where
 open import lib.Base public
 open import lib.NType public
 open import lib.NType2 public
-open import lib.PathSeq public
+-- open import lib.PathSeq public
 open import lib.PathOver public
 open import lib.PathFunctor public
 open import lib.PathGroupoid public

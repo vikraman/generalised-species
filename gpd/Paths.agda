@@ -57,3 +57,11 @@ module _ {i} {A : Type i} where
   _∙'ₗ_ : {x y z : A} {q q' : y == z} (p : x == y) (β : q == q')
         → p ∙' q == p ∙' q'
   _∙'ₗ_ {q = q} {q' = q'} idp β = ∙'-unit-l q ∙ β ∙ ! (∙'-unit-l q')
+
+  ∙∙-assoc : {x y z w v : A} (p : x == y) (q : y == z) (r : z == w) (s : w == v)
+           → (p ∙ q ∙ r) ∙ s == p ∙ (q ∙ (r ∙ s))
+  ∙∙-assoc p q r s = (! (∙-assoc p q r) ∙ᵣ s) ∙ ∙-assoc (p ∙ q) r s ∙ ∙-assoc p q (r ∙ s)
+
+  ∙∙∙'-assoc : {x y z w v : A} (p : x == y) (q : y == z) (r : z == w) (s : w == v)
+            → (p ∙ q ∙ r) ∙' s == p ∙ (q ∙ (r ∙' s))
+  ∙∙∙'-assoc p q r s = ∙∙'-assoc p (q ∙ r) s ∙ (p ∙ₗ ∙∙'-assoc q r s)
