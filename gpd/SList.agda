@@ -144,8 +144,13 @@ module _ {i} where
              → (x ::* (y ::* xs*)) == (y ::* (x ::* xs*)) [ (λ z → f z == g z) ↓ swap x y xs ])
       where
 
+      private module F = SListElimPaths f g nil* _::*_ swap*
+
       rec : (xs : SList A) → f xs == g xs
-      rec = SListElimPaths.elim f g nil* _::*_ swap*
+      rec = F.elim
+
+      rec-swap-β : {x y : A} {xs : SList A} → apd rec (swap x y xs) == swap* x y (rec xs)
+      rec-swap-β = F.elim-swap-β
 
     module SListRecPathsSet {j} {P : Type j} ⦃ trunc* : has-level 0 P ⦄
       (f g : SList A → P)

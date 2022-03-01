@@ -162,9 +162,9 @@ module _ {i} {A : Type i} where
 
   module ++-β (xs ys : SList A) where
 
-    f-::-nil-swap : (x y z : A) {xs : SList A} (p : x :: xs == xs ++ [ x ])
+    g-::-nil-swap : (x y z : A) {xs : SList A} (p : x :: xs == xs ++ [ x ])
                   → (swap x y (z :: xs) ∙ ap (y ::_) (swap x z xs ∙ ap (z ::_) p)) == (swap x z (y :: xs) ∙ ap (z ::_) (swap x y xs ∙ ap (y ::_) p)) [ (λ xs → x :: xs == xs ++ [ x ]) ↓ swap y z xs ]
-    f-::-nil-swap x y z {xs} p =
+    g-::-nil-swap x y z {xs} p =
       ↓-='-swap-in (x ::_) (_++ [ x ])
         ((swap x y (z :: xs) ∙ ap (y ::_) (swap x z xs ∙ ap (z ::_) p)) ∙' ap (_++ [ x ]) (swap y z xs)
         =⟨ (swap x y (z :: xs) ∙ ap (y ::_) (swap x z xs ∙ ap (z ::_) p)) ∙'ₗ (++-r-swap-β [ x ]) ⟩
@@ -185,40 +185,97 @@ module _ {i} {A : Type i} where
           ap (x ::_) (swap y z xs) ∙ swap x z (y :: xs) ∙ ap (z ::_ ) (swap x y xs ∙ ap (y ::_) p)
         =∎)
 
-    f-::-nil : (x : A) (ys : SList A) → x :: ys == ys ++ [ x ]
-    f-::-nil x =
+    g-::-nil : (x : A) (ys : SList A) → x :: ys == ys ++ [ x ]
+    g-::-nil x =
       SListRecPaths.rec ⦃ trunc ⦄
         (x ::_) (_++ [ x ])
         idp (λ y {ys} p → swap x y ys ∙ ap (y ::_) p)
-        (λ y z {xs} p → f-::-nil-swap x y z p)
+        (λ y z {xs} p → g-::-nil-swap x y z p)
 
-    f-:: : (x : A) {xs : SList A} (ys : SList A)
+    g-:: : (x : A) {xs : SList A} (ys : SList A)
         → (p : xs ++ ys == ys ++ xs)
         → (x :: xs) ++ ys == ys ++ (x :: xs)
-    f-:: x {xs} ys p =
-      ap (x ::_) p ∙ ap (_++ xs) (f-::-nil x ys) ∙ ++-α.f ys [ x ] xs
+    g-:: x {xs} ys p =
+      ap (x ::_) p ∙ ap (_++ xs) (g-::-nil x ys) ∙ ++-α.f ys [ x ] xs
 
-      -- SListRecPaths.rec ⦃ trunc ⦄
-      --   (λ xs → x :: xs ++ ys) (λ xs → ys ++ (x :: xs))
-      --   (f-::-nil x ys)
-      --   (λ y {xs} p → {!!})
-      --   TODO
-      --   xs
-
-    f-::-swap : (x y : A) {xs : SList A} (ys : SList A)
+    g-::-swap : (x y : A) {xs : SList A} (ys : SList A)
              → (p : xs ++ ys == ys ++ xs)
-             → (f-:: x ys (f-:: y ys p)) == (f-:: y ys (f-:: x ys p)) [ (λ xs → xs ++ ys == ys ++ xs) ↓ swap x y xs ]
-    f-::-swap x y {xs} ys p =
+             → (g-:: x ys (g-:: y ys p)) == (g-:: y ys (g-:: x ys p)) [ (λ xs → xs ++ ys == ys ++ xs) ↓ swap x y xs ]
+    g-::-swap x y {xs} ys p =
       ↓-='-swap-in (_++ ys) (ys ++_)
-        ( f-:: x ys (f-:: y ys p) ∙' ap (ys ++_) (swap x y xs)
+        ( g-:: x ys (g-:: y ys p) ∙' ap (ys ++_) (swap x y xs)
         =⟨ idp ⟩
-          (ap (x ::_) (f-:: y ys p) ∙ ap (_++ y :: xs) (f-::-nil x ys) ∙ ++-α.f ys [ x ] (y :: xs)) ∙' ap (ys ++_) (swap x y xs)
+          (ap (x ::_) (g-:: y ys p) ∙ ap (_++ y :: xs) (g-::-nil x ys) ∙ ++-α.f ys [ x ] (y :: xs)) ∙' ap (ys ++_) (swap x y xs)
         =⟨ TODO ⟩
-          swap x y (xs ++ ys) ∙ (ap (y ::_) (f-:: x ys p) ∙ ap (_++ x :: xs) (f-::-nil y ys) ∙ ++-α.f ys [ y ] (x :: xs))
+          swap x y (xs ++ ys) ∙ (ap (y ::_) (g-:: x ys p) ∙ ap (_++ x :: xs) (g-::-nil y ys) ∙ ++-α.f ys [ y ] (x :: xs))
         =⟨ idp ⟩
-          swap x y (xs ++ ys) ∙ f-:: y ys (f-:: x ys p)
-        =⟨ ! (++-r-swap-β ys) ∙ᵣ f-:: y ys (f-:: x ys p) ⟩
-          ap (_++ ys) (swap x y xs) ∙ f-:: y ys (f-:: x ys p)
+          swap x y (xs ++ ys) ∙ g-:: y ys (g-:: x ys p)
+        =⟨ ! (++-r-swap-β ys) ∙ᵣ g-:: y ys (g-:: x ys p) ⟩
+          ap (_++ ys) (swap x y xs) ∙ g-:: y ys (g-:: x ys p)
+        =∎)
+
+    f-::-swap : (x y z : A) {xs : SList A} (ys : SList A)
+              → (p : x :: xs ++ ys == xs ++ x :: ys)
+              → (swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys) ∙ ap (z ::_) p)) == (swap x z ((y :: xs) ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys) ∙ ap (y ::_) p)) [ (λ zs → x :: zs ++ ys == zs ++ x :: ys) ↓ swap y z xs ]
+    f-::-swap x y z {xs} ys p =
+      ↓-='-swap-in (λ zs → x :: zs ++ ys) (λ zs → zs ++ x :: ys)
+        ( (swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys) ∙ ap (z ::_) p)) ∙' ap (_++ x :: ys) (swap y z xs)
+        =⟨ (swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys) ∙ ap (z ::_) p)) ∙'ₗ ++-r-swap-β (x :: ys) ⟩
+          (swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys) ∙ ap (z ::_) p)) ∙' swap y z (xs ++ x :: ys)
+        =⟨ (swap x y ((z :: xs) ++ ys) ∙ₗ ap-∙ (y ::_) (swap x z (xs ++ ys)) (ap (z ::_) p)) ∙'ᵣ swap y z (xs ++ x :: ys) ⟩
+          (swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys)) ∙ ap (y ::_) (ap (z ::_) p)) ∙' swap y z (xs ++ x :: ys)
+        =⟨ ∙∙∙'-assoc (swap x y ((z :: xs) ++ ys)) (ap (y ::_) (swap x z (xs ++ ys))) (ap (y ::_) (ap (z ::_) p)) (swap y z (xs ++ x :: ys)) ⟩
+          swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys)) ∙ (ap (y ::_) (ap (z ::_) p) ∙' swap y z (xs ++ x :: ys))
+        =⟨ swap x y ((z :: xs) ++ ys) ∙ₗ (ap (y ::_) (swap x z (xs ++ ys)) ∙ₗ swap-nat' p) ⟩
+          swap x y ((z :: xs) ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys)) ∙ swap y z (x :: xs ++ ys) ∙ ap (z ::_) (ap (y ::_) p)
+        =⟨ ! (∙∙-assoc (swap x y ((z :: xs) ++ ys)) (ap (y ::_) (swap x z (xs ++ ys))) (swap y z (x :: xs ++ ys)) (ap (z ::_) (ap (y ::_) p))) ⟩
+          (swap x y (z :: xs ++ ys) ∙ ap (y ::_) (swap x z (xs ++ ys)) ∙ swap y z (x :: xs ++ ys)) ∙ ap (z ::_) (ap (y ::_) p)
+        =⟨ ⬡ x y z (xs ++ ys) ∙ᵣ ap (z ::_) (ap (y ::_) p) ⟩
+          (ap (x ::_) (swap y z (xs ++ ys)) ∙ swap x z (y :: xs ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys))) ∙ ap (z ::_) (ap (y ::_) p)
+        =⟨ ∙∙-assoc (ap (x ::_) (swap y z (xs ++ ys))) (swap x z (y :: xs ++ ys)) (ap (z ::_) (swap x y (xs ++ ys))) (ap (z ::_) (ap (y ::_) p)) ⟩
+          ap (x ::_) (swap y z (xs ++ ys)) ∙ swap x z (y :: xs ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys)) ∙ ap (z ::_) (ap (y ::_) p)
+        =⟨ ap (ap (x ::_)) (! (++-r-swap-β ys)) ∙ᵣ swap x z (y :: xs ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys)) ∙ ap (z ::_) (ap (y ::_) p) ⟩
+          ap (x ::_) (ap (_++ ys) (swap y z xs)) ∙ swap x z ((y :: xs) ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys)) ∙ ap (z ::_) (ap (y ::_) p)
+        =⟨ ∘-ap (x ::_) (_++ ys) (swap y z xs) ∙ᵣ swap x z ((y :: xs) ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys)) ∙ ap (z ::_) (ap (y ::_) p) ⟩
+          ap (λ zs → x :: zs ++ ys) (swap y z xs) ∙ swap x z ((y :: xs) ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys)) ∙ ap (z ::_) (ap (y ::_) p)
+        =⟨ ap (λ zs → x :: zs ++ ys) (swap y z xs) ∙ₗ (swap x z ((y :: xs) ++ ys) ∙ₗ ∙-ap (z ::_) (swap x y (xs ++ ys)) (ap (y ::_) p)) ⟩
+          ap (λ zs → x :: zs ++ ys) (swap y z xs) ∙ swap x z ((y :: xs) ++ ys) ∙ ap (z ::_) (swap x y (xs ++ ys) ∙ ap (y ::_) p)
+        =∎)
+
+    f-:: : (x : A) {xs : SList A} (ys : SList A)
+        → (x :: xs) ++ ys == xs ++ (x :: ys)
+    f-:: x {xs} ys =
+      SListRecPaths.rec ⦃ trunc ⦄
+        (λ xs → x :: xs ++ ys) (λ xs → xs ++ (x :: ys))
+        idp
+        (λ y {xs} p → swap x y (xs ++ ys) ∙ ap (y ::_) p)
+        (λ y z {xs} p → f-::-swap x y z ys p)
+        xs
+
+    f-::-swap-β : (x : A) {xs : SList A} (ys : SList A) (y z : A)
+                → apd (λ xs → f-:: x {xs} ys) (swap y z xs) == f-::-swap x y z {xs} ys (f-:: x {xs} ys)
+    f-::-swap-β x {xs} ys y z =
+      SListRecPaths.rec-swap-β ⦃ trunc ⦄
+        (λ xs → x :: xs ++ ys) (λ xs → xs ++ (x :: ys))
+        idp
+        (λ y {xs} p → swap x y (xs ++ ys) ∙ ap (y ::_) p)
+        (λ y z {xs} p → f-::-swap x y z ys p)
+        {y} {z} {xs}
+
+    f-swap : (x y : A) {xs : SList A} (ys : SList A)
+           → (p : xs ++ ys == ys ++ xs)
+           → (ap (x ::_) (ap (y ::_) p ∙ f-:: y {ys} xs) ∙ f-:: x {ys} (y :: xs)) == (ap (y ::_) (ap (x ::_) p ∙ f-:: x {ys} xs) ∙ f-:: y {ys} (x :: xs)) [ (λ zs → zs ++ ys == ys ++ zs) ↓ swap x y xs ]
+    f-swap x y {xs} ys p =
+      ↓-='-swap-in (_++ ys) (ys ++_)
+        ( (ap (x ::_) (ap (y ::_) p ∙ f-:: y {ys} xs) ∙ f-:: x {ys} (y :: xs)) ∙' ap (ys ++_) (swap x y xs)
+        =⟨ (ap-∙ (x ::_) (ap (y ::_) p) (f-:: y {ys} xs) ∙ᵣ f-:: x {ys} (y :: xs)) ∙'ᵣ ap (ys ++_) (swap x y xs) ⟩
+          ((ap (x ::_) (ap (y ::_) p) ∙ ap (x ::_) (f-:: y {ys} xs)) ∙ f-:: x {ys} (y :: xs)) ∙' ap (ys ++_) (swap x y xs)
+        =⟨ TODO ⟩
+          swap x y (xs ++ ys) ∙ (ap (y ::_) (ap (x ::_) p) ∙ ap (y ::_) (f-:: x {ys} xs)) ∙ f-:: y {ys} (x :: xs)
+        =⟨ ! (++-r-swap-β ys) ∙ᵣ ((ap (y ::_) (ap (x ::_) p) ∙ ap (y ::_) (f-:: x {ys} xs)) ∙ f-:: y {ys} (x :: xs)) ⟩
+           ap (_++ ys) (swap x y xs) ∙ (ap (y ::_) (ap (x ::_) p) ∙ ap (y ::_) (f-:: x {ys} xs)) ∙ f-:: y {ys} (x :: xs)
+        =⟨ ap (_++ ys) (swap x y xs) ∙ₗ (∙-ap (y ::_) (ap (x ::_) p) (f-:: x {ys} xs) ∙ᵣ f-:: y {ys} (x :: xs)) ⟩
+          ap (_++ ys) (swap x y xs) ∙ ap (y ::_) (ap (x ::_) p ∙ f-:: x {ys} xs) ∙ f-:: y {ys} (x :: xs)
         =∎)
 
     f : xs ++ ys == ys ++ xs
@@ -226,8 +283,8 @@ module _ {i} {A : Type i} where
       SListRecPaths.rec ⦃ trunc ⦄
         (_++ ys) (ys ++_)
         (! (++-ρ.f ys))
-        (λ x {xs} p → f-:: x ys p)
-        (λ x y {xs} p → f-::-swap x y ys p)
+        (λ x {xs} p → ap (x ::_) p ∙ f-:: x {ys} xs)
+        (λ x y {xs} p → f-swap x y {xs} ys p)
         xs
 
   module ++-▽ (xs ys : SList A) where
