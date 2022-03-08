@@ -160,3 +160,27 @@ module _ {i} where
 
       rec : (xs : SList A) → f xs == g xs
       rec = SListElimPathsSet.elim f g nil* _::*_
+
+    module SListElim2Paths {j} {P : SList A → Type j} ⦃ trunc* : {X : SList A} → has-level 1 (P X) ⦄
+      (f g : (xs : SList A) → P xs)
+      (p q : (xs : SList A) → f xs == g xs)
+      (nil* : p nil == q nil)
+      (_::*_ : (x : A) {xs : SList A} → p xs == q xs → p (x :: xs) == q (x :: xs))
+      where
+
+      private module F = SListElimProp nil* _::*_
+
+      elim : (xs : SList A) → p xs == q xs
+      elim = F.f
+
+    module SListRec2Paths {j} {P : Type j} ⦃ trunc* : has-level 1 P ⦄
+      (f g : SList A → P)
+      (p q : (xs : SList A) → f xs == g xs)
+      (nil* : p nil == q nil)
+      (_::*_ : (x : A) {xs : SList A} → p xs == q xs → p (x :: xs) == q (x :: xs))
+      where
+
+      private module F = SListElim2Paths f g p q nil* _::*_
+
+      rec : (xs : SList A) → p xs == q xs
+      rec = F.elim
