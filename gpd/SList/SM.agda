@@ -10,11 +10,16 @@ open import gpd.SList.SMGStructure
 
 module _ {i} {A : Type i} where
 
-  module ++-β² (xs ys : SList A) where
+  module ++-⬡ (xs ys zs : SList A) where
 
-    f : ++-β.f xs ys ∙ ++-β.f ys xs == idp
+    f : ++-α.f xs ys zs ∙ ++-β.f xs (ys ++ zs) ∙ ++-α.f ys zs xs
+      == ap (_++ zs) (++-β.f xs ys) ∙ ++-α.f ys xs zs ∙ ap (ys ++_) (++-β.f xs zs)
     f =
-      SListElimProp.f {P = λ zs → ++-β.f zs ys ∙ ++-β.f ys zs == idp} ⦃ two-paths-level ⦄
-        {!!}
-        {!!}
+      SListRec2Paths.rec ⦃ trunc ⦄
+        ?
+        ?
+        ?
+        ?
+        ?
+        ?
         xs
