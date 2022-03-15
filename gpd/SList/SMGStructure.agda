@@ -13,14 +13,14 @@ module _ {i} {A : Type i} where
 
   -- FIXME: this takes too long to typecheck
   instance
-    SList-SMGStructure : SMGStructure (SList A) ⦃ ? ⦄
+    SList-SMGStructure : SMGStructure (SList A) ⦃ trunc ⦄
     SMGStructure.I SList-SMGStructure = nil
     SMGStructure._⊗_ SList-SMGStructure = _++_
-    SMGStructure.α SList-SMGStructure X Y Z = ++-α.f X Y Z
-    SMGStructure.Λ SList-SMGStructure X = ++-Λ.f X
-    SMGStructure.ρ SList-SMGStructure X = ++-ρ.f X
-    SMGStructure.β SList-SMGStructure X Y = ++-β.f X Y
-    SMGStructure.▽ SList-SMGStructure X Y = ++-▽.f X Y
-    SMGStructure.⬠ SList-SMGStructure W X Y Z = ++-⬠.f W X Y Z
-    SMGStructure.⬡ SList-SMGStructure X Y Z = ++-⬡.f X Y Z
-    SMGStructure.β² SList-SMGStructure X Y = TODO -- ++-β².f X Y
+    SMGStructure.α SList-SMGStructure = ++-α.f
+    SMGStructure.Λ SList-SMGStructure = ++-Λ.f
+    SMGStructure.ρ SList-SMGStructure = ++-ρ.f
+    SMGStructure.β SList-SMGStructure = ++-β.f
+    SMGStructure.▽ SList-SMGStructure = TODO -- ++-▽.f
+    SMGStructure.⬠ SList-SMGStructure = TODO -- ++-⬠.f
+    SMGStructure.⬡ SList-SMGStructure = TODO -- ++-⬡.f X Y Z
+    SMGStructure.β² SList-SMGStructure = TODO -- ++-β².f X Y

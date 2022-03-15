@@ -5,6 +5,7 @@ module gpd.SMG where
 open import gpd.Prelude
 
 record SMGStructure {i} (El : Type i) ⦃ El-level : has-level 1 El ⦄ : Type i where
+  no-eta-equality
   constructor smg-structure
   field
     I : El
@@ -28,8 +29,12 @@ record SMGStructure {i} (El : Type i) ⦃ El-level : has-level 1 El ⦄ : Type i
 
     β² : (X Y : El) → β X Y ∙ β Y X == idp
 
+  trunc : has-level 1 El
+  trunc = El-level
+
 record SMFunctor {i j} (A : Type i) ⦃ _ : has-level 1 A ⦄ ⦃ GA : SMGStructure A ⦄
                        (B : Type j) ⦃ _ : has-level 1 B ⦄ ⦃ GB : SMGStructure B ⦄ : Type (lmax i j) where
+  no-eta-equality
   constructor sm-functor
   private
     module A = SMGStructure GA
