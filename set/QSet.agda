@@ -31,10 +31,16 @@ xs ≈ ys = ∥ xs ≈₀ ys ∥
 ≈₀-refl [] = nil-refl
 ≈₀-refl (x ∷ xs) = cons-cong refl (≈₀-refl xs)
 
+≈-refl : (xs : List A) → xs ≈ xs
+≈-refl = ∣_∣ ∘ ≈₀-refl
+
 ≈₀-sym : (xs ys : List A) → xs ≈₀ ys → ys ≈₀ xs
 ≈₀-sym .[] .[] nil-refl = nil-refl
 ≈₀-sym .(_ ∷ _) .(_ ∷ _) (cons-cong p q) = cons-cong (sym p) (≈₀-sym _ _ q)
 ≈₀-sym .(_ ∷ _) .(_ ∷ _) (comm-rel p q) = comm-rel (≈₀-sym _ _ q) (≈₀-sym _ _ p)
+
+≈-sym : (xs ys : List A) → xs ≈ ys → ys ≈ xs
+≈-sym xs ys = P.map (≈₀-sym xs ys)
 
 -- stuck
 -- ≈₀-trans : (xs ys zs : List A) → xs ≈₀ ys → ys ≈₀ zs → xs ≈₀ zs

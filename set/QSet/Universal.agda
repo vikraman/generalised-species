@@ -27,6 +27,15 @@ module _ {A : Type ℓ} (R : Rel A A ℓ) where
                                     (λ a b c p → eq/ (f a c) (f b c) (f-cong₂ p (R-isRefl c)))
                                     (λ a b c p → eq/ (f a b) (f a c) (f-cong₂ (R-isRefl a) p))
 
+q[_] : A → QSet A
+q[_] = Q.[_] ∘ L.[_]
+
+∷-cong₀ : {x : A} {xs ys : List A} → xs ≈₀ ys → (x ∷ xs) ≈₀ (x ∷ ys)
+∷-cong₀ r = cons-cong refl r
+
+_q∷_ : A → QSet A → QSet A
+x q∷ xs = Q.rec squash/ (λ xs → Q.[ x ∷ xs ]) (λ a b r → eq/ (x ∷ a) (x ∷ b) (P.map ∷-cong₀ r)) xs
+
 ++-cong₀ : {as bs cs ds : List A} → as ≈₀ cs → bs ≈₀ ds → (as ++ bs) ≈₀ (cs ++ ds)
 ++-cong₀ nil-refl r = r
 ++-cong₀ (cons-cong p q) r = cons-cong p (++-cong₀ q r)
@@ -56,6 +65,6 @@ swap-rel : (x y : A) (xs : List A) → (x ∷ y ∷ xs) ≈₀ (y ∷ x ∷ xs)
 swap-rel x y xs = comm-rel (≈₀-refl (y ∷ xs)) (≈₀-refl (x ∷ xs))
 
 -- need ≈₀-trans
--- cons-++₀ : (x : A) (xs : List A) → (x ∷ xs) ≈₀ (xs ++ L.[ x ])
--- cons-++₀ x [] = ≈₀-refl L.[ x ]
--- cons-++₀ x (y ∷ xs) = {!!}
+cons-++₀ : (x : A) (xs : List A) → (x ∷ xs) ≈ (xs ++ L.[ x ])
+cons-++₀ x [] = {!!}
+cons-++₀ x (y ∷ xs) = {!!}
