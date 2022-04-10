@@ -56,6 +56,9 @@ m+n≡1→m≡1×n≡0⊎m≡0×n≡1 {suc m} {n} p =
 ++-sing-in : ((xs ≡ [ a ]) × (ys ≡ [])) ⊎ ((xs ≡ []) × (ys ≡ [ a ])) → xs ++ ys ≡ [ a ]
 ++-sing-in = rec (uncurry (λ p q i → p i ++ q i)) (uncurry (λ p q i → p i ++ q i))
 
+η : A → MSet A
+η = [_]
+
 μ : MSet (MSet A) → MSet A
 μ = univ.f♯ (MSetCMon _) (idfun (MSet _))
 

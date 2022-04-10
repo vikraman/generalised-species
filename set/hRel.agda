@@ -150,3 +150,38 @@ A ⊗ B = A × B
 
 _⊗₀_ : (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) → hSet ℓ
 (A , ϕ) ⊗₀ (B , ψ) = A ⊗ B , isSet× ϕ ψ
+
+_⊸_ : (A B : Type ℓ) → Type ℓ
+A ⊸ B = A × B
+
+_⊸₀_ : (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) → hSet ℓ
+(A , ϕ) ⊸₀ (B , ψ) = A ⊸ B , isSet× ϕ ψ
+
+module _ {A B C : Type ℓ} where
+
+  κ : C ⊗ (A ⊸ B) → A ⊸ (C ⊗ B)
+  κ (c , a , b) = a , c , b
+
+  κ-equiv : isEquiv κ
+  κ-equiv =
+    isoToIsEquiv
+      (iso κ (λ { (a , c , b) → c , a , b  })
+             (λ { (c , a , b) → refl })
+             (λ { (a , c , b) → refl }))
+
+module _ {A B : Type ℓ} where
+
+  _† :  A ⇸ B → B ⇸ A
+  f † = λ b a → f a b
+
+  †-equiv : isEquiv _†
+  †-equiv =
+    isoToIsEquiv
+      (iso _† (λ f a b → f b a)
+              (λ f → funExt (λ b → funExt (λ a → refl)))
+              (λ f → funExt (λ a → funExt (λ b → refl))))
+
+module _ {A : Type ℓ} {BSet@(B , ϕ) : hSet ℓ} where
+
+  _# : (A → B) → (A ⇸ B)
+  f # = よ BSet ∘ f
