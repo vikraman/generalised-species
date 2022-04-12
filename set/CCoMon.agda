@@ -9,10 +9,17 @@ open import Agda.Primitive
 
 open import set.Prelude
 open import set.hRel
+open import set.CMon using (CMon)
+open import set.DLaw
+
+private
+  variable
+    ℓ : Level
+    A B : Type ℓ
 
 record CCoMon {ℓ} (C : Type ℓ) : Type (ℓ-suc ℓ) where
   field
-    e : C ⇸ II
+    e : C ⇸ II {ℓ}
     Δ : C ⇸ (C ⊗ C)
     isSetC : isSet C
 
@@ -20,11 +27,28 @@ record CCoMon {ℓ} (C : Type ℓ) : Type (ℓ-suc ℓ) where
   CSet = C , isSetC
 
 open import set.MSet
+open import set.MSet.Universal as M using (_++_ ; MSetCMon)
 open import set.Power as P
 
-module _ {ℓ} {ASet@(A , ϕ) : hSet ℓ} where
+module _ {ℓ} {A : Type ℓ} (C : CMon A) where
 
-  MSetCCoMon : CCoMon (MSet A)
-  CCoMon.e MSetCCoMon xs tt = よ (MSet A , trunc) xs []
-  CCoMon.Δ MSetCCoMon = TODO
-  CCoMon.isSetC MSetCCoMon = TODO
+  module C = CMon C
+  open C
+
+  _∗ : (B → A) → (B ⇸ A)
+  _∗ = _# {BSet = A , isSetM}
+
+  ∇ : CCoMon A
+  CCoMon.e ∇ = (const e ∗) †
+  CCoMon.Δ ∇ = ((uncurry C._⊗_) ∗) †
+  CCoMon.isSetC ∇ = isSetM
+
+MSetCCoMon : CCoMon (MSet A)
+MSetCCoMon = ∇ (MSetCMon _)
+
+module univ {M : Type _} (C : CMon M) (f : M ⇸ A) where
+
+  f♯ : M ⇸ MSet A
+  f♯ = M.univ.f♯ (day.ℙMCMon {{C}}) (f †) †
+
+open univ

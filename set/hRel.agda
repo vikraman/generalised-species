@@ -5,6 +5,7 @@ module set.hRel where
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything hiding (assoc ; isIso ; id)
 open import Cubical.Data.Sigma
+open import Cubical.Data.Unit public
 open import Cubical.HITs.PropositionalTruncation
 open import Agda.Primitive
 
@@ -84,17 +85,19 @@ data O {ℓ} : Type ℓ where
 ptd : {A B : Type ℓ} → A ⇸ B
 ptd = ! ⊚ ¡
 
-record II {ℓ} : Type ℓ where
-  constructor tt
+II = Unit*
 
-IIContr : isContr (II {ℓ})
-IIContr = tt , λ { tt → refl }
+-- record II {ℓ} : Type ℓ where
+--   constructor tt
 
-IISet : ∀ {ℓ} → hSet ℓ
-IISet = II , isProp→isSet (isContr→isProp IIContr)
+-- IIContr : isContr (II {ℓ})
+-- IIContr = tt , λ { tt → refl }
+
+-- IISet : ∀ {ℓ} → hSet ℓ
+-- IISet = II , isProp→isSet (isContr→isProp IIContr)
 
 ii : {A : Type ℓ} → A ⇸ II
-ii a = よ IISet tt
+ii a = よ (Unit* , isSetUnit*) tt*
 
 open import Cubical.Data.Sum
 

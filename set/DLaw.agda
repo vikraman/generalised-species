@@ -38,6 +38,8 @@ module day {ℓ} {M : Type ℓ} {{CM : CMon M}} where
   CMon.assoc-⊗ ℙMCMon = TODO
   CMon.isSetM ℙMCMon = TODO
 
+open day
+
 Λ : ∀ {ℓ} (XSet@(X , ϕ) : hSet ℓ) → MSet (ℙ X) → ℙ (MSet X)
 Λ (X , ϕ) = M.univ.f♯ (day.ℙMCMon {{MSetCMon X}}) (map {ASet = X , ϕ} {MSet X , trunc} ([_]))
 
