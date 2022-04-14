@@ -10,7 +10,7 @@ open import Agda.Primitive
 open import set.Prelude
 open import set.hRel
 open import set.CMon using (CMon)
-open import set.DLaw
+open import set.DLaw using (module day)
 
 private
   variable
@@ -19,12 +19,18 @@ private
 
 record CCoMon {ℓ} (C : Type ℓ) : Type (ℓ-suc ℓ) where
   field
-    e : C ⇸ II {ℓ}
-    Δ : C ⇸ (C ⊗ C)
+    k : C ⇸ II {ℓ}
+    w : C ⇸ (C ⊗ C)
     isSetC : isSet C
 
   CSet : hSet ℓ
   CSet = C , isSetC
+
+  field
+    counit-l : ⊗[ idr CSet , k ] ⊚ w ≡ ρ⁻¹ CSet
+    counit-r : ⊗[ k , idr CSet ] ⊚ w ≡ Λ⁻¹ CSet
+    coassoc : ⊗[ w , idr CSet ] ⊚ w ≡ α⁻¹ CSet CSet CSet ⊚ ⊗[ idr CSet , w ] ⊚ w
+    cocomm : β CSet CSet ⊚ w ≡ w
 
 open import set.MSet
 open import set.MSet.Universal as M using (_++_ ; MSetCMon)
@@ -39,9 +45,13 @@ module _ {ℓ} {A : Type ℓ} (C : CMon A) where
   _∗ = _# {BSet = A , isSetM}
 
   ∇ : CCoMon A
-  CCoMon.e ∇ = (const e ∗) †
-  CCoMon.Δ ∇ = ((uncurry C._⊗_) ∗) †
+  CCoMon.k ∇ = (const e ∗) †
+  CCoMon.w ∇ = ((uncurry C._⊗_) ∗) †
   CCoMon.isSetC ∇ = isSetM
+  CCoMon.counit-l ∇ = TODO
+  CCoMon.counit-r ∇ = TODO
+  CCoMon.coassoc ∇ = TODO
+  CCoMon.cocomm ∇ = TODO
 
 MSetCCoMon : CCoMon (MSet A)
 MSetCCoMon = ∇ (MSetCMon _)

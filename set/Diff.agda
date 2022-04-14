@@ -43,7 +43,7 @@ CMon.assoc-⊗ IICMon = λ _ _ _ → refl
 CMon.isSetM IICMon = isSetUnit*
 
 ϕ-II : II ⇸ MSet II
-ϕ-II = univ.f♯ IICMon (hRel.id (II , isSetUnit*))
+ϕ-II = univ.f♯ IICMon (hRel.idr (II , isSetUnit*))
 
 w : MSet A ⇸ (MSet A ⊗ MSet A)
 w = (uncurry _++_ ∗) †

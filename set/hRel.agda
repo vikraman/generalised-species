@@ -23,8 +23,8 @@ A ⇸ B = A → ℙ B
 isSet⇸ : {A B : Type ℓ} → isSet (A ⇸ B)
 isSet⇸ = isSetΠ (λ _ → isSetℙ)
 
-id : (ASet@(A , ϕ) : hSet ℓ) → A ⇸ A
-id = よ
+idr : (ASet@(A , ϕ) : hSet ℓ) → A ⇸ A
+idr = よ
 
 module _ {A B C : Type ℓ} where
 
@@ -34,10 +34,10 @@ module _ {A B C : Type ℓ} where
 
 module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
 
-  unitl : {f : A ⇸ B} → id BSet ⊚ f ≡ f
+  unitl : {f : A ⇸ B} → idr BSet ⊚ f ≡ f
   unitl {f} i = よ* {ASet = BSet} i ∘ f
 
-  unitr : {f : A ⇸ B} → f ≡ f ⊚ id ASet
+  unitr : {f : A ⇸ B} → f ≡ f ⊚ idr ASet
   unitr {f} i = *よ {ASet = ASet} {BSet = BSet} f i
 
 module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) DSet@(D , χ) : hSet ℓ} where
@@ -48,16 +48,16 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) DSet@(D , χ) : hSet ℓ} wh
 module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
 
   isIso : (f : A ⇸ B) → Type (ℓ-suc ℓ)
-  isIso f = Σ _ λ g → (g ⊚ f ≡ id ASet) × (f ⊚ g ≡ id BSet)
+  isIso f = Σ _ λ g → (g ⊚ f ≡ idr ASet) × (f ⊚ g ≡ idr BSet)
 
   isPropIsIso : {f : A ⇸ B} → isProp (isIso f)
   isPropIsIso {f} (g , p , q) (g' , p' , q') =
     Σ≡Prop (λ _ → isProp× (isSet⇸ _ _) (isSet⇸ _ _))
            (g ≡⟨ sym (unitl {ASet = BSet} {BSet = ASet}) ⟩
-            id ASet ⊚ g ≡⟨ cong (_⊚ g) (sym p') ⟩
+            idr ASet ⊚ g ≡⟨ cong (_⊚ g) (sym p') ⟩
             (g' ⊚ f) ⊚ g ≡⟨ sym (assoc {ASet = BSet} {BSet = ASet} {CSet = BSet} {DSet = ASet} {g} {f} {g'}) ⟩
             g' ⊚ (f ⊚ g) ≡⟨ cong (g' ⊚_) q ⟩
-            g' ⊚ id BSet ≡⟨ sym (unitr {ASet = BSet} {BSet = ASet}) ⟩
+            g' ⊚ idr BSet ≡⟨ sym (unitr {ASet = BSet} {BSet = ASet}) ⟩
             g' ∎)
 
 _≅_ : hSet ℓ → hSet ℓ → Type (ℓ-suc ℓ)
@@ -66,7 +66,7 @@ _≅_ : hSet ℓ → hSet ℓ → Type (ℓ-suc ℓ)
 module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
 
   ω' : A ≡ B → A ⇸ B
-  ω' p = subst (A ⇸_) p (id ASet)
+  ω' p = subst (A ⇸_) p (idr ASet)
 
   -- ω : ASet ≡ BSet → ASet ≅ BSet
   -- ω p = subst (λ X → ASet ≅ X) p (id ASet , id ASet , {!!})
@@ -151,6 +151,37 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
 _⊗_ : (A B : Type ℓ) → Type ℓ
 A ⊗ B = A × B
 
+⊗[_,_] : {A B C D : Type ℓ} → (f : A ⇸ B) (g : C ⇸ D) → (A ⊗ C) ⇸ (B ⊗ D)
+⊗[ f , g ] (a , c) (b , d) = f a b ⊓ g c d
+
+module _ (ASet@(A , ϕ) : hSet ℓ) where
+  ρ : (A ⊗ II) ⇸ A
+  ρ (a , _) = よ ASet a
+
+  ρ⁻¹ : A ⇸ (A ⊗ II)
+  ρ⁻¹ a = よ (A ⊗ II , isSet× ϕ isSetUnit*) (a , tt*)
+
+module _ (ASet@(A , ϕ) : hSet ℓ) where
+  Λ : (II ⊗ A) ⇸ A
+  Λ (_ , a) = よ ASet a
+
+  Λ⁻¹ : A ⇸ (II ⊗ A)
+  Λ⁻¹ a = よ (II ⊗ A , isSet× isSetUnit* ϕ) (tt* , a)
+
+module _ (ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , δ) : hSet ℓ) where
+  α : ((A ⊗ B) ⊗ C) ⇸ (A ⊗ (B ⊗ C))
+  α ((a , b) , c) = よ (A ⊗ (B ⊗ C) , isSet× ϕ (isSet× ψ δ)) (a , b , c)
+
+  α⁻¹ : (A ⊗ (B ⊗ C)) ⇸ ((A ⊗ B) ⊗ C)
+  α⁻¹ (a , (b , c)) = よ ((A ⊗ B) ⊗ C , isSet× (isSet× ϕ ψ) δ) ((a , b) , c)
+
+module _ (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) where
+  β : (A ⊗ B) ⇸ (B ⊗ A)
+  β (a , b) = よ (B × A , isSet× ψ ϕ) (b , a)
+
+  β⁻¹ : (B ⊗ A) ⇸ (A ⊗ B)
+  β⁻¹ (b , a) = よ (A × B , isSet× ϕ ψ) (a , b)
+
 _⊗₀_ : (ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ) → hSet ℓ
 (A , ϕ) ⊗₀ (B , ψ) = A ⊗ B , isSet× ϕ ψ
 
@@ -183,6 +214,16 @@ module _ {A B : Type ℓ} where
       (iso _† (λ f a b → f b a)
               (λ f → funExt (λ b → funExt (λ a → refl)))
               (λ f → funExt (λ a → funExt (λ b → refl))))
+
+module _ {ASet@(A , ϕ) : hSet ℓ} where
+
+  †-id : (idr ASet) † ≡ idr ASet
+  †-id = TODO
+
+module _ {A B C : Type ℓ} where
+
+  †-⊚ : {f : A ⇸ B} {g : B ⇸ C} → (g ⊚ f) † ≡ f † ⊚ g †
+  †-⊚ = TODO
 
 module _ {A : Type ℓ} {BSet@(B , ϕ) : hSet ℓ} where
 
