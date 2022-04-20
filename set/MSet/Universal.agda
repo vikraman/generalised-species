@@ -46,6 +46,11 @@ comm-++ = elimProp.f (isPropΠ (λ _ → trunc _ _))
                  ∙ cong (_++ xs) (cons-++ x ys)
                  ∙ sym (assoc-++ ys [ x ] xs))
 
+module _ {a b : A} {as bs cs : MSet A} where
+
+  commrel : (as ≡ b :: cs) → (a :: cs ≡ bs) → a :: as ≡ b :: bs
+  commrel p q = cong (a ::_) p ∙ swap a b cs ∙ cong (b ::_) q
+
 open import set.CMon using (CMon; CMonHom; CMonHom≡)
 
 MSetCMon : (A : Type ℓ) → CMon (MSet A)

@@ -6,7 +6,7 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything hiding (assoc ; isIso ; id)
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit public
-open import Cubical.HITs.PropositionalTruncation
+open import Cubical.HITs.PropositionalTruncation as T
 open import Agda.Primitive
 
 open import set.Power as P
@@ -218,12 +218,13 @@ module _ {A B : Type ℓ} where
 module _ {ASet@(A , ϕ) : hSet ℓ} where
 
   †-id : (idr ASet) † ≡ idr ASet
-  †-id = TODO
+  †-id = funExt λ a → funExt λ b → ⇔toPath sym sym
 
 module _ {A B C : Type ℓ} where
 
   †-⊚ : {f : A ⇸ B} {g : B ⇸ C} → (g ⊚ f) † ≡ f † ⊚ g †
-  †-⊚ = TODO
+  †-⊚ = funExt λ c → funExt λ a →
+    ⇔toPath (T.map λ { (b , ϕ , ψ) → b , ψ , ϕ }) (T.map λ { (b , ϕ , ψ) → b , ψ , ϕ })
 
 module _ {A : Type ℓ} {BSet@(B , ϕ) : hSet ℓ} where
 

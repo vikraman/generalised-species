@@ -34,6 +34,17 @@ M≃N {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
 _ : (M≃N .fst) (1 :: 2 :: 3 :: []) ≡ (1 :: 2 :: 3 :: [])
 _ = refl
 
+M≃N' : MSet A ≃ NSet A
+M≃N' {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
+  where f : MSet A → NSet A
+        f = M.elim.f [] (λ x xs → x :: xs) (λ x y xs → N.swap x y xs) (λ _ → trunc)
+        g : NSet A → MSet A
+        g = N.elim.f [] (λ x xs → x :: xs) (λ p q → M.commrel p q) (λ _ → trunc)
+        f-g : (xs : NSet A) → f (g xs) ≡ xs
+        f-g = N.elimProp.f (trunc _ _) refl (λ x → cong (x ::_))
+        g-f : (xs : MSet A) → g (f xs) ≡ xs
+        g-f = M.elimProp.f (trunc _ _) refl (λ x → cong (x ::_))
+
 open import set.CMon as F
 
 F≃M : Free A ≃ MSet A

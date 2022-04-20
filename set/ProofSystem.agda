@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split --safe #-}
+{-# OPTIONS --cubical --exact-split #-}
 
 module set.ProofSystem where
 
@@ -14,6 +14,7 @@ open import Cubical.Data.List as L
 open import Cubical.HITs.SetQuotients as Q
 
 open import set.NSet
+open import set.Prelude
 
 private
   variable
@@ -37,6 +38,9 @@ xs ≈ ys = ∥ xs ≈₀ ys ∥
 ≈₀-refl : (xs : List A) → xs ≈₀ xs
 ≈₀-refl [] = nil-refl
 ≈₀-refl (x ∷ xs) = cons-cong refl (≈₀-refl xs)
+
+encode : (xs ys : List A) → xs ≡ ys → xs ≈₀ ys
+encode xs ys = J (λ ys p → xs ≈₀ ys) (≈₀-refl xs)
 
 ≈₀-sym : (xs ys : List A) → xs ≈₀ ys → ys ≈₀ xs
 ≈₀-sym .[] .[] nil-refl = nil-refl
@@ -84,7 +88,7 @@ module _ {ℓ} {A : Type ℓ} where
   ≈-sym as bs = P.map (≈₀-sym as bs)
 
   ≈-trans : isTrans
-  ≈-trans as bs cs = {!!}
+  ≈-trans as bs cs p q = TODO
 
   ≈-isEquivRel : isEquivRel
   ≈-isEquivRel = equivRel ≈-refl ≈-sym ≈-trans

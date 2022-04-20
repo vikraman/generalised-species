@@ -19,8 +19,8 @@ private
     ℓ : Level
     A B : Type ℓ
     ϕ : isSet A
-    a x : A
-    xs ys : MSet A
+    a b x y : A
+    xs ys as bs cs : MSet A
 
 module _ {ϕ : isSet A} (a b : A) where
 
