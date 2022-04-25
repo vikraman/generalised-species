@@ -71,12 +71,15 @@ _q::_ x =
         (λ xs → Q.[ x ∷ xs ])
         (λ xs ys p → eq/ (x ∷ xs) (x ∷ ys) (P.map (cons-cong refl) p))
 
--- N→Q : NSet A → QSet A
--- N→Q =
---   elim.f Q.[ [] ]
---          (λ x {xs} → x q::_)
---          (λ {a} {b} {as bs cs} {bas bbs bcs} {p} bp {q} bq → {!!})
---          (λ _ → squash/)
+swap-≈₀ : {x y : A} {xs : List A} → (x ∷ y ∷ xs) ≈₀ (y ∷ x ∷ xs)
+swap-≈₀ {xs = xs} = comm-rel (cons-cong refl (≈₀-refl xs)) (cons-cong refl (≈₀-refl xs))
+
+N→Q : NSet A → QSet A
+N→Q =
+  elim.f Q.[ [] ]
+         (λ x {xs} → x q::_)
+         (λ {a} {b} {as bs cs} {bas bbs bcs} {p} bp {q} bq → TODO)
+         (λ _ → squash/)
 
 module _ {ℓ} {A : Type ℓ} where
   open BinaryRelation {A = List A} _≈_
