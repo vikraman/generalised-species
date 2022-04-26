@@ -22,7 +22,7 @@ private
   variable
     ℓ ℓ₁ ℓ₂ : Level
     A : Type ℓ
-    n : ℕ
+    n m o : ℕ
 
 infix 3 _≈₀_ _≈_ _≅_
 
@@ -52,12 +52,6 @@ xs ≈ ys = ∥ xs ≈₀ ys ∥
 
 ≈-sym : (xs ys : Vec A n) → xs ≈ ys → ys ≈ xs
 ≈-sym xs ys = P.map (≈₀-sym xs ys)
-
-≈₀-trans : (xs ys zs : Vec A n) → xs ≈₀ ys → ys ≈₀ zs → xs ≈₀ zs
-≈₀-trans xs ys zs = TODO
-
-≈-trans : (xs ys zs : Vec A n) → xs ≈ ys → ys ≈ zs → xs ≈ zs
-≈-trans xs ys zs = P.map2 (≈₀-trans xs ys zs)
 
 cons-inj₁ : {x y : A} {xs ys : Vec A n} → x ∷ xs ≡ y ∷ ys → x ≡ y
 cons-inj₁ p = cong head p
@@ -207,7 +201,46 @@ tree (suc (suc n)) (x ∷ xs) (y ∷ ys) (p , ϕ) with biEq? (–> p zero) zero
   let η : lookup (–> p zero) (x ∷ xs) ≡ x
       η = cong (λ z → lookup z (x ∷ xs)) ψ
       ε : xs ≅ ys
-      ε = ppred p ψ , cons-inj₂ (cong (λ z → z ∷ _) (sym η) ∙ TODO)
+      ε = ppred p ψ , TODO
   in TODO
 ... | ¬eq ψ =
   TODO
+
+≈₀-trans : (xs ys zs : Vec A n) → xs ≈₀ ys → ys ≈₀ zs → xs ≈₀ zs
+≈₀-trans xs ys zs p q = tree _ xs zs (bij xs ys p ■ bij ys zs q)
+
+≈-trans : (xs ys zs : Vec A n) → xs ≈ ys → ys ≈ zs → xs ≈ zs
+≈-trans xs ys zs = P.map2 (≈₀-trans xs ys zs)
+
+open import Cubical.Data.List as L
+
+List→Vec : (xs : List A) → Vec A (L.length xs)
+List→Vec [] = []
+List→Vec (x ∷ xs) = x ∷ List→Vec xs
+
+≈₁-aux : (n : ℕ) → Vec A n → (m : ℕ) → Vec A m → Type _
+≈₁-aux n xs m ys = Σ (n ≡ m) λ p → subst (Vec _) p xs ≈₀ ys
+
+_≈₁_ : List A → List A → Type _
+xs ≈₁ ys = ≈₁-aux (L.length xs) (List→Vec xs) (L.length ys) (List→Vec ys)
+
+_≈'_ : List A → List A → Type _
+xs ≈' ys = ∥ xs ≈₁ ys ∥
+
+-- subst doesn't compute on refl
+-- ≈₁-refl : (xs : List A) → xs ≈₁ xs
+-- ≈₁-refl [] =
+--   refl , subst (λ ys → ys ≈₀ []) (sym (substRefl [])) nil-refl
+-- ≈₁-refl (x ∷ xs) =
+--   let (ϕ , ψ) = ≈₁-refl xs
+--   in cong suc ϕ , subst (λ ys → ys ≈₀ x ∷ List→Vec xs) (sym (substRefl (x ∷ xs))) (cons-cong refl ψ)
+
+-- ≈'-refl : (xs : List A) → xs ≈' xs
+-- ≈'-refl = ∣_∣ ∘ ≈₁-refl
+
+postulate
+  ≈₁-refl : (xs : List A) → xs ≈₁ xs
+  ≈₁-sym : (xs ys : List A) → xs ≈₁ ys → ys ≈₁ xs
+  ≈₁-trans : (xs ys zs : List A) → xs ≈₁ ys → ys ≈₁ zs → xs ≈₁ zs
+  ≈₁-cong-∷ : (x : A) {xs ys : List A} → (x ∷ xs) ≈₁ (x ∷ ys)
+  ≈₁-cong-++ : {xs ys zs ws : List A} → xs ≈₁ ys → zs ≈₁ ws → (xs L.++ zs) ≈₁ (ys L.++ ws)

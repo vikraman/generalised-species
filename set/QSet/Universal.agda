@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split --safe #-}
+{-# OPTIONS --cubical --exact-split #-}
 
 module set.QSet.Universal where
 
@@ -40,7 +40,6 @@ x q∷ xs = Q.rec squash/ (λ xs → Q.[ x ∷ xs ]) (λ a b r → eq/ (x ∷ a)
 ++-cong₀ nil-refl r = r
 ++-cong₀ (cons-cong p q) r = cons-cong p (++-cong₀ q r)
 ++-cong₀ (comm-rel p q) r = comm-rel (++-cong₀ p r) (++-cong₀ q (≈₀-refl _))
-++-cong₀ (trans-rel p q) r = trans-rel (++-cong₀ p r) (++-cong₀ q (≈₀-refl _))
 
 _q++_ : ∀ (xs ys : QSet A) → QSet A
 _q++_ = qmap2 _≈_ _++_ (λ xs → ∣ ≈₀-refl xs ∣) (P.map2 ++-cong₀)
@@ -74,15 +73,14 @@ swap-rel x y xs = comm-rel (≈₀-refl (y ∷ xs)) (≈₀-refl (x ∷ xs))
 
 cons-++₀ : (x : A) (xs : List A) → x ∷ xs ≈₀ xs ++ L.[ x ]
 cons-++₀ x [] = ≈₀-refl L.[ x ]
-cons-++₀ x (y ∷ xs) = trans-rel (swap-rel x y xs) (cons-cong refl (cons-++₀ x xs))
+cons-++₀ x (y ∷ xs) = (swap-rel x y xs) ■ (cons-cong refl (cons-++₀ x xs))
 
 comm-++₀ : (xs ys : List A) → xs ++ ys ≈₀ ys ++ xs
 comm-++₀ [] ys =
   ≈₀-sym (ys ++ []) ys (unitr-q++₀ ys)
 comm-++₀ (x ∷ xs) ys =
-  trans-rel (trans-rel (cons-cong refl (comm-++₀ xs ys))
-                       (++-cong₀ (cons-++₀ x ys) (≈₀-refl xs)))
-            (≈₀-sym (ys ++ x ∷ xs) ((ys ++ L.[ x ]) ++ xs) (assoc-q++₀ ys L.[ x ] xs))
+  ((cons-cong refl (comm-++₀ xs ys)) ■ (++-cong₀ (cons-++₀ x ys) (≈₀-refl xs))) ■
+  (≈₀-sym (ys ++ x ∷ xs) ((ys ++ L.[ x ]) ++ xs) (assoc-q++₀ ys L.[ x ] xs))
 
 comm-q++ : (xs ys : QSet A) → xs q++ ys ≡ ys q++ xs
 comm-q++ =
@@ -123,7 +121,6 @@ module univ {M : Type ℓ₁} (C : CMon M) (f : A → M) where
         let r : g xs ≡ f y ⊗ g zs ; r = g-≈₀ xs (y ∷ zs) p
             s : f x ⊗ g zs ≡ g ys ; s = g-≈₀ (x ∷ zs) ys q
         in comm-rule r s
-      g-≈₀ xs ys (trans-rel p q) = g-≈₀ _ _ p ∙ g-≈₀ _ _ q
 
       g-≈ : (xs ys : List A) → xs ≈ ys → g xs ≡ g ys
       g-≈ xs ys = P.rec (isSetM _ _) (g-≈₀ xs ys)
