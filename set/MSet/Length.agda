@@ -123,14 +123,16 @@ module _ {ϕ : isSet A} where
   lenOnePath-in : {a b : A} → [ a ] ≡ [ b ] → lenOnePath a b
   lenOnePath-in = Σ≡Prop (λ xs → isSetℕ _ _)
 
-  [-]-inj : {a b : A} → lenOnePath a b → a ≡ b
-  [-]-inj {a = a} {b = b} p = sym (head-β a) ∙ cong head p ∙ head-β b
+  [-]-inj : {a b : A} → [ a ] ≡ [ b ] → a ≡ b
+  [-]-inj {a = a} {b = b} p = aux (lenOnePath-in p)
+    where aux : lenOnePath a b → a ≡ b
+          aux p = sym (head-β a) ∙ cong head p ∙ head-β b
 
   [-]-emb : isEmbedding [_]
-  [-]-emb = injEmbedding ϕ trunc λ p → [-]-inj (lenOnePath-in p)
+  [-]-emb = injEmbedding ϕ trunc [-]-inj
 
   is-sing-prop : (xs : MSet A) → isProp (is-sing xs)
-  is-sing-prop xs (a , ψ) (b , ξ) = Σ≡Prop (is-sing-pred-prop xs) ([-]-inj (lenOnePath-in (ψ ∙ sym ξ)))
+  is-sing-prop xs (a , ψ) (b , ξ) = Σ≡Prop (is-sing-pred-prop xs) ([-]-inj (ψ ∙ sym ξ))
 
   lenOne-eqv : (xs : MSet A) → (length xs ≡ 1) ≃ (is-sing xs)
   lenOne-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (is-sing-prop xs) (lenOne-out xs) (λ p i → length (p .snd (~ i)))

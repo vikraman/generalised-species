@@ -6,7 +6,9 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sigma
 open import Cubical.Data.Nat
-open import Cubical.Data.Sum
+open import Cubical.Data.Sum as S
+import Cubical.Data.Empty as E
+import Cubical.HITs.PropositionalTruncation as P
 
 open import set.Prelude
 open import set.MSet
@@ -25,7 +27,7 @@ private
 module _ {ϕ : isSet A} (a b : A) where
 
   lem71 : ([ a ] ≡ [ b ]) ≃ (a ≡ b)
-  lem71 = propBiimpl→Equiv (trunc _ _) (ϕ _ _) (λ p → [-]-inj {ϕ = ϕ} (lenOnePath-in {ϕ = ϕ} p)) (cong [_])
+  lem71 = propBiimpl→Equiv (trunc _ _) (ϕ _ _) (λ p → [-]-inj {ϕ = ϕ} p) (cong [_])
 
 ++-nil-out : xs ++ ys ≡ [] → (xs ≡ []) × (ys ≡ [])
 ++-nil-out {xs = xs} {ys = ys} p =
@@ -62,11 +64,23 @@ m+n≡1→m≡1×n≡0⊎m≡0×n≡1 {suc m} {n} p =
 μ : MSet (MSet A) → MSet A
 μ = univ.f♯ (MSetCMon _) (idfun (MSet _))
 
+mmap : (A → B) → MSet A → MSet B
+mmap f = univ.f♯ (MSetCMon _) ([_] ∘ f)
+
+mmap-cons : (x : A) (xs : MSet A) (f : A → B)
+         → mmap f (x :: xs) ≡ f x :: mmap f xs
+mmap-cons x xs f = univ.f♯-cons (MSetCMon _) ([_] ∘ f) x xs
+
+mmap-length : (xs : MSet A) (f : A → B) → length (mmap f xs) ≡ length xs
+mmap-length xs f =
+  elimProp.f {B = λ xs → length (mmap f xs) ≡ length xs}
+    (isSetℕ _ _) refl (λ _ → cong suc) xs
+
 μ-cons : (x : MSet A) (xs : MSet (MSet A)) → μ (x :: xs) ≡ x ++ μ xs
 μ-cons = univ.f♯-cons (MSetCMon _) (idfun (MSet _))
 
 mlen : MSet (MSet A) → MSet ℕ
-mlen = univ.f♯ (MSetCMon _) ([_] ∘ length)
+mlen = mmap length
 
 mlen-cons : (x : MSet A) (xs : MSet (MSet A)) → mlen (x :: xs) ≡ length x :: mlen xs
 mlen-cons = univ.f♯-cons (MSetCMon ℕ) ([_] ∘ length)
@@ -82,14 +96,27 @@ mlenfold-cons n xs = univ.f♯-cons ℕCMon (idfun ℕ) n (mlen xs)
   refl
   λ x {xs} p → cong length (μ-cons x xs)
              ∙ length-++ x (μ xs)
-             ∙ sym (cong mlenfold (mlen-cons x xs)
-                   ∙ mlenfold-cons (length x) xs
-                   ∙ cong (length x +_) (sym p))
+             ∙ sym (cong mlenfold (mmap-cons x xs length)
+                  ∙ mlenfold-cons (length x) xs
+                  ∙ cong (length x +_) (sym p))
 
-module _ {ϕ : isSet A} (a : A) (s : MSet (MSet A)) where
+module _ {ϕ : isSet A} (a : A) where
 
-  lem72 : [ a ] ≡ μ s → Σ (MSet (MSet A)) λ s' → (μ s' ≡ []) × ([ a ] :: s' ≡ s)
-  lem72 = TODO
+  lem72 : (s : MSet (MSet A))
+       → [ a ] ≡ μ s
+       → ∃ (MSet (MSet A)) λ t → (μ t ≡ []) × ([ a ] :: t ≡ s)
+  lem72 s =
+    elimProp.f {B = λ s → [ a ] ≡ μ s → ∃ (MSet (MSet A)) λ t → (μ t ≡ []) × ([ a ] :: t ≡ s)}
+      (isPropΠ (λ _ → P.squash))
+      (λ ψ → E.rec (snotz (cong length ψ)))
+      (λ x {xs} ψ χ →
+        let δ = ++-sing-out {xs = x} {ys = μ xs} (sym (χ ∙ μ-cons x xs))
+        in rec (λ { (α , β) → P.∣ xs , β , cong (_:: xs) (α ⁻¹) ∣ })
+               (λ { (α , β) →
+                 let z = ψ (β ⁻¹) in
+                 P.map (λ { (t' , γ , δ) → [] :: t' , μ-cons [] t' ∙ γ , swap [ a ] [] t' ∙ cong₂ _::_ (α ⁻¹) δ }) z })
+           δ)
+      s
 
 module _ {ϕ : isSet A} (s1 s2 : MSet (MSet A)) where
 
@@ -99,7 +126,16 @@ module _ {ϕ : isSet A} (s1 s2 : MSet (MSet A)) where
 module _ {ϕ : isSet A} {ψ : isSet B} (a : A) (t : MSet (A × B)) where
 
   mfst : MSet (A × B) → MSet A
-  mfst = univ.f♯ (MSetCMon A) ([_] ∘ fst)
+  mfst = mmap fst
 
   lem74 : mfst t ≡ [ a ] → Σ B λ b → t ≡ [ (a , b) ]
-  lem74 = TODO
+  lem74 p =
+    let δ : is-sing t
+        δ = lenOne-eqv {ϕ = isSet× ϕ ψ} t .fst (sym (mmap-length t fst) ∙ cong length p)
+        a' = δ .fst .fst
+        b = δ .fst .snd
+        χ : t ≡ [ (a' , b) ]
+        χ = sym (δ .snd)
+        ϵ : a ≡ a'
+        ϵ = [-]-inj {ϕ = ϕ} (sym p ∙ cong mfst χ)
+    in b , χ ∙ cong (λ x → [ x , b ]) (sym ϵ)

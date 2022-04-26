@@ -8,15 +8,13 @@ open import Cubical.Data.Sigma
 open import Agda.Primitive
 
 open import set.MSet
+open import set.MSet.Paths
 open import set.MSet.Universal
 
 private
   variable
     ℓ : Level
     A B : Type ℓ
-
-mmap : (A → B) → MSet A → MSet B
-mmap f = univ.f♯ (MSetCMon _) ([_] ∘ f)
 
 σ : MSet A × B → MSet (A × B)
 σ (as , b) = mmap (λ a → (a , b)) as

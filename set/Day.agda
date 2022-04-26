@@ -1,18 +1,11 @@
 {-# OPTIONS --cubical --exact-split #-}
 
-module set.DLaw where
+module set.Day where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything hiding (assoc)
 open import Cubical.Data.Sigma
 open import Agda.Primitive
-
--- record DLaw {ℓ} {ℓ₂} (S : Type ℓ → Type ℓ) {{MS : Monad S}} (T : Type ℓ → Type ℓ₂) {{MT : RMonad T}} : Type {!!} where
---   private
---     module S = Monad MS
---     module T = RMonad MT
---   field
---     Λ : (X : Type ℓ) → S {!T X!} → T (S X)
 
 open import set.Prelude
 open import set.CMon using (CMon)

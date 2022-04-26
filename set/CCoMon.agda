@@ -11,7 +11,7 @@ open import Agda.Primitive
 open import set.Prelude
 open import set.hRel
 -- open import set.CMon using (CMon)
-open import set.DLaw using (module day)
+open import set.Day using (module day)
 
 private
   variable
