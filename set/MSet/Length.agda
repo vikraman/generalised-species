@@ -49,9 +49,6 @@ lenZero-out = elimProp.f (isPropΠ λ _ → trunc _ _)
 lenZero-eqv : (xs : MSet A) → (length xs ≡ 0) ≃ ([] ≡ xs)
 lenZero-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (trunc _ _) (lenZero-out xs) (λ p i → length (p (~ i)))
 
-singSet : Type ℓ → Type ℓ
-singSet A = Σ (MSet A) (λ xs → 1 ≡ length xs)
-
 is-sing-pred : MSet A → A → Type _
 is-sing-pred xs a = [ a ] ≡ xs
 
@@ -60,6 +57,9 @@ is-sing-pred-prop xs a = trunc [ a ] xs
 
 is-sing : MSet A → Type _
 is-sing xs = Σ _ (is-sing-pred xs)
+
+Sing : Type ℓ → Type ℓ
+Sing A = Σ (MSet A) is-sing
 
 [_]-is-sing : (a : A) → is-sing [ a ]
 [ a ]-is-sing = a , refl
@@ -135,7 +135,7 @@ module _ {ϕ : isSet A} where
   is-sing-prop xs (a , ψ) (b , ξ) = Σ≡Prop (is-sing-pred-prop xs) ([-]-inj (ψ ∙ sym ξ))
 
   lenOne-eqv : (xs : MSet A) → (length xs ≡ 1) ≃ (is-sing xs)
-  lenOne-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (is-sing-prop xs) (lenOne-out xs) (λ p i → length (p .snd (~ i)))
+  lenOne-eqv xs = propBiimpl→Equiv (isSetℕ _ _) (is-sing-prop xs) (lenOne-out xs) (λ χ → cong length (sym (χ .snd)))
 
   lenOne-set-eqv : lenOne A ≃ A
   lenOne-set-eqv = isoToEquiv (iso head g head-β g-f)
@@ -145,3 +145,10 @@ module _ {ϕ : isSet A} where
           g-f (as , ϕ) =
             let (a , ψ) = lenOne-out as ϕ
             in Σ≡Prop (λ xs → isSetℕ _ _) {u = ([ a ] , refl)} {v = (as , ϕ)} ψ
+
+  sing-set-eqv : Sing A ≃ A
+  sing-set-eqv = isoToEquiv (iso f (λ a → [ a ] , [ a ]-is-sing) (λ _ → refl) ret)
+    where f : Sing A → A
+          f s = s .snd .fst
+          ret : (s : Sing A) → ([ f s ] , f s , refl) ≡ s
+          ret (s , ψ) = Σ≡Prop is-sing-prop (ψ .snd)
