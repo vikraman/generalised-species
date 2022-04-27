@@ -228,18 +228,15 @@ _≈'_ : List A → List A → Type _
 xs ≈' ys = ∥ xs ≈₁ ys ∥
 
 -- subst doesn't compute on refl
--- ≈₁-refl : (xs : List A) → xs ≈₁ xs
--- ≈₁-refl [] =
---   refl , subst (λ ys → ys ≈₀ []) (sym (substRefl [])) nil-refl
--- ≈₁-refl (x ∷ xs) =
---   let (ϕ , ψ) = ≈₁-refl xs
---   in cong suc ϕ , subst (λ ys → ys ≈₀ x ∷ List→Vec xs) (sym (substRefl (x ∷ xs))) (cons-cong refl ψ)
+≈₁-refl : (xs : List A) → xs ≈₁ xs
+≈₁-refl xs = refl , subst (_≈₀ List→Vec xs)
+                          (sym (substRefl {B = λ _ → Vec _ (L.length xs)} {x = List→Vec xs} (List→Vec xs)))
+                          (≈₀-refl (List→Vec xs))
 
--- ≈'-refl : (xs : List A) → xs ≈' xs
--- ≈'-refl = ∣_∣ ∘ ≈₁-refl
+≈'-refl : (xs : List A) → xs ≈' xs
+≈'-refl = ∣_∣ ∘ ≈₁-refl
 
 postulate
-  ≈₁-refl : (xs : List A) → xs ≈₁ xs
   ≈₁-sym : (xs ys : List A) → xs ≈₁ ys → ys ≈₁ xs
   ≈₁-trans : (xs ys zs : List A) → xs ≈₁ ys → ys ≈₁ zs → xs ≈₁ zs
   ≈₁-cong-∷ : (x : A) {xs ys : List A} → (x ∷ xs) ≈₁ (x ∷ ys)
