@@ -20,7 +20,6 @@ private
   variable
     ℓ : Level
     A B : Type ℓ
-    ϕ : isSet A
     a b x y : A
     xs ys as bs cs : MSet A
 
