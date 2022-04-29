@@ -99,7 +99,7 @@ mlenfold-cons n xs = univ.f♯-cons ℕCMon (idfun ℕ) n (mlen xs)
                   ∙ mlenfold-cons (length x) xs
                   ∙ cong (length x +_) (sym p))
 
-module _ {ϕ : isSet A} (a : A) where
+module _ (a : A) where
 
   lem72 : (s : MSet (MSet A))
        → [ a ] ≡ μ s
@@ -117,7 +117,7 @@ module _ {ϕ : isSet A} (a : A) where
            δ)
       s
 
-module _ {ϕ : isSet A} (s1 s2 : MSet (MSet A)) where
+module _ (s1 s2 : MSet (MSet A)) where
 
   lem73 : μ (s1 ++ s2) ≡ μ s1 ++ μ s2
   lem73 = univ.f♯-++ (MSetCMon A) (idfun (MSet A)) s1 s2

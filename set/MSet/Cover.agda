@@ -74,7 +74,11 @@ module _ {ℓ} {A : Type ℓ} where
   ≈-isEquivRel : isEquivRel
   ≈-isEquivRel = equivRel ≈-refl ≈-sym ≈-trans
 
-module thm61 {A : Type ℓ} {ϕ : isSet A} where
+module thm61 {A : Type ℓ} {ϕ : isSet A}
+             (bialg : (as bs cs ds : MSet A) → (as ++ bs) ≡ (cs ++ ds)
+                   → Σ (MSet A × MSet A × MSet A × MSet A)
+                        λ { (xs1 , xs2 , ys1 , ys2) → (as ≡ xs1 ++ xs2) × (bs ≡ ys1 ++ ys2)
+                                                     × (xs1 ++ ys1 ≡ cs) × (xs2 ++ ys2 ≡ ds) }) where
 
   goal : (a b : A) (as bs : MSet A) → hProp ℓ
   goal a b as bs =
@@ -102,19 +106,12 @@ module thm61 {A : Type ℓ} {ϕ : isSet A} where
   lem2 a b as cs (xs , p , q) =
     let (ϕ , ψ) = lem1 a b xs p in (ϕ , q ∙ cong (_++ cs) ψ)
 
-  lem3 : (as bs cs ds : MSet A)
-      → (as ++ bs) ≡ (cs ++ ds)
-      → Σ (MSet A × MSet A × MSet A × MSet A)
-         λ { (xs1 , xs2 , ys1 , ys2) → (as ≡ xs1 ++ xs2) × (bs ≡ ys1 ++ ys2)
-                                      × (xs1 ++ ys1 ≡ cs) × (xs2 ++ ys2 ≡ ds) }
-  lem3 as bs cs ds p = TODO
-
   lem4 : (a : A) (as bs cs : MSet A)
       → (a :: as) ≡ (bs ++ cs)
       → Σ (MSet A) (λ xs → (a :: xs ≡ bs) × (as ≡ xs ++ cs))
        ⊎ Σ (MSet A) (λ ys → (as ≡ bs ++ ys) × (a :: ys ≡ cs))
   lem4 a as bs cs p =
-    let ((xs1 , xs2 , ys1 , ys2) , (ϕ1 , ϕ2 , ϕ3 , ϕ4)) = lem3 [ a ] as bs cs p
+    let ((xs1 , xs2 , ys1 , ys2) , (ϕ1 , ϕ2 , ϕ3 , ϕ4)) = bialg [ a ] as bs cs p
         q : ((xs1 ≡ [ a ]) × (xs2 ≡ [])) ⊎ ((xs1 ≡ []) × (xs2 ≡ [ a ]))
         q = ++-sing-out {xs = xs1} {ys = xs2} {a = a} (sym ϕ1)
     in S.rec (λ { (ϕ , ψ) → S.inl (ys1 , cong (_++ ys1) (sym ϕ) ∙ ϕ3 , ϕ2 ∙ cong (λ z → ys1 ++ (z ++ ys2)) (sym ψ) ∙ cong (ys1 ++_) ϕ4) })
