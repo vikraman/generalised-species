@@ -6,13 +6,16 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sum
 open import Cubical.Data.Sigma
-open import Cubical.Data.Empty
+open import Cubical.Data.Empty as E
 open import Cubical.HITs.PropositionalTruncation as P
 open import Cubical.HITs.SetTruncation as S
 open import Cubical.Relation.Binary
+open import Cubical.Relation.Nullary
 open import Cubical.Data.Vec as V
 open import Cubical.Data.Nat as N
 open import Cubical.Data.FinData as F
+import Cubical.Data.Fin as F
+import Cubical.Data.Fin.LehmerCode as F
 open import Cubical.HITs.SetQuotients as Q
 
 open import set.NSet
@@ -172,19 +175,35 @@ bij (x ∷ xs) (y ∷ ys) (comm-rel {cs = cs} p q) =
   ■ pswap , app-pswap-β
   ■ ≅-cong-∷ refl (bij (x ∷ cs) ys q)
 
-ppred : (p : Perm (suc (suc n))) → (–> p zero ≡ zero) → Perm (suc n)
-ppred p ϕ = iso f g f-g g-f
-  where
-    f : _
-    f i = predFin (–> p (suc i))
-    g : _
-    g i = predFin (<– p (suc i))
-    f-g : _
-    f-g zero = TODO
-    f-g (suc i) = TODO
-    g-f : _
-    g-f zero = TODO
-    g-f (suc i) = TODO
+suc-predFin : {i : Fin (suc (suc n))} → ¬ (i ≡ zero) → suc (predFin i) ≡ i
+suc-predFin {i = zero} ϕ = E.rec (ϕ refl)
+suc-predFin {i = suc i} ϕ = refl
+
+–>-inj-neg : (p : Perm (suc n)) → (–> p zero ≡ zero) → {i : Fin (suc n)} → ¬ (i ≡ zero) → ¬ (–> p i ≡ zero)
+–>-inj-neg p ϕ {i} ψ χ = ψ (isoFunInjective p i zero (χ ∙ sym ϕ))
+
+<–-inj-neg : (p : Perm (suc n)) → (<– p zero ≡ zero) → {i : Fin (suc n)} → ¬ (i ≡ zero) → ¬ (<– p i ≡ zero)
+<–-inj-neg p ϕ {i} ψ χ = ψ (isoInvInjective p i zero (χ ∙ sym ϕ))
+
+–>-<– : (p : Perm n) {i j : Fin n} → –> p i ≡ j → <– p j ≡ i
+–>-<– p {i} ϕ = cong (<– p) (sym ϕ) ∙ happly (ret p) i
+
+module _ {n : ℕ} where
+  ppred : (p : Perm (suc (suc n))) → (–> p zero ≡ zero) → Perm (suc n)
+  ppred p ϕ = iso f g f-g g-f
+    where
+      f : _
+      f i = predFin (–> p (suc i))
+      g : _
+      g i = predFin (<– p (suc i))
+      f-g : _
+      f-g i = cong (predFin ∘ –> p) (suc-predFin (<–-inj-neg p (–>-<– p ϕ) F.snotz))
+            ∙ cong predFin (happly (sec p) (suc i))
+      g-f : _
+      g-f i = cong (predFin ∘ <– p) (suc-predFin (–>-inj-neg p ϕ F.snotz))
+            ∙ cong predFin (happly (ret p) (suc i))
+
+-- app-ppred-β : app (–> ppred p ϕ) (x ∷ y ∷ xs) ≡ y ∷ x ∷ xs
 
 pdel : Fin (suc n) → Perm (suc n)
 pdel = TODO
@@ -194,15 +213,16 @@ tree zero [] [] p =
   ≈₀-refl []
 tree (suc zero) (x ∷ []) (y ∷ []) (p , ϕ) =
   let ψ = cong –> (isContrPerm1 .snd p)
-      δ = cong (λ f → app f (x ∷ [])) (ψ ⁻¹)
-  in cons-cong (cons-inj₁ (δ ⁻¹ ∙ ϕ)) nil-refl
+      δ = cong (λ f → app f (x ∷ [])) ψ
+  in cons-cong (cons-inj₁ (δ ∙ ϕ)) nil-refl
 tree (suc (suc n)) (x ∷ xs) (y ∷ ys) (p , ϕ) with biEq? (–> p zero) zero
 ... | eq ψ =
-  let η : lookup (–> p zero) (x ∷ xs) ≡ x
-      η = cong (λ z → lookup z (x ∷ xs)) ψ
-      ε : xs ≅ ys
-      ε = ppred p ψ , TODO
-  in TODO
+  let ε : xs ≅ ys
+      ε = ppred p ψ , {!!}
+  in cons-cong (cons-inj₁ (subst (λ z → lookup z (x ∷ xs) ∷ lookup (–> p (suc zero)) (x ∷ xs)
+                                       ∷ FinVec→Vec (Vec→FinVec (x ∷ xs) ∘ ((–> p) ∘ λ z → (suc (suc z)))) ≡ y ∷ ys)
+                                 ψ ϕ))
+               (tree (suc n) xs ys ε)
 ... | ¬eq ψ =
   TODO
 
