@@ -117,20 +117,20 @@ _■_ {xs = xs} {ys} {zs} = ≅-trans xs ys zs
 ≅-cong-∷ {x = x} {y} {xs} {ys} p (q , ϕ) =
   dsuc q , funExt λ { zero → p ; (suc n) → happly ϕ n }
 
-swap : (x y : A) (xs : Vec A n) → V→L (x ∷ y ∷ xs) ≅ V→L (y ∷ x ∷ xs)
-swap {n = n} x y xs = dswap {n = n} , funExt (λ { zero → refl ; (suc zero) → refl ; (suc (suc n)) → refl })
+≅-swap : (x y : A) (xs : Vec A n) → V→L (x ∷ y ∷ xs) ≅ V→L (y ∷ x ∷ xs)
+≅-swap {n = n} x y xs = dswap {n = n} , funExt (λ { zero → refl ; (suc zero) → refl ; (suc (suc n)) → refl })
 
-bij : (xs ys : Vec A n) → xs ≈₀ ys → V→L xs ≅ V→L ys
+bij : (as bs : Vec A n) → as ≈₀ bs → V→L as ≅ V→L bs
 bij .[] .[] nil-refl =
   ≅-refl (V→L [])
-bij (x ∷ xs) (y ∷ ys) (cons-cong p q) =
-  ≅-cong-∷ p (bij xs ys q)
-bij (x ∷ xs) (y ∷ ys) (comm-rel {cs = cs} p q) =
-  ≅-trans _ _ (V→L (y ∷ ys))
-    (≅-cong-∷ refl (bij xs (y ∷ cs) p))
-    (≅-trans _ _ (V→L (y ∷ ys))
-      (swap x y cs)
-      (≅-cong-∷ refl (bij (x ∷ cs) ys q)))
+bij (a ∷ as) (b ∷ bs) (cons-cong p q) =
+  ≅-cong-∷ p (bij as bs q)
+bij (a ∷ as) (b ∷ bs) (comm-rel {cs = cs} p q) =
+  ≅-trans _ _ (V→L (b ∷ bs))
+    (≅-cong-∷ refl (bij as (b ∷ cs) p))
+    (≅-trans _ _ (V→L (b ∷ bs))
+      (≅-swap a b cs)
+      (≅-cong-∷ refl (bij (a ∷ cs) bs q)))
 
 infix 3 _<_
 _<_ : FinData n → FinData n → Type₀
