@@ -1,11 +1,10 @@
-{-# OPTIONS --cubical --exact-split #-}
+{-# OPTIONS --cubical --exact-split --safe #-}
 
 module set.Iso where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 
-open import set.Prelude
 open import set.MSet as M
 open import set.NSet as N
 open import set.MSet.Universal as M
@@ -24,12 +23,10 @@ M≃N {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
         module g-univ = N.univ (MSetCMon A) M.[_]
         g : NSet A → MSet A
         g = g-univ.f♯
-        f-g-htpy : idfun (NSet A) ≡ f ∘ g
-        f-g-htpy = TODO
         f-g : (xs : NSet A) → f (g xs) ≡ xs
-        f-g xs i = f-g-htpy (~ i) xs
+        f-g = N.elimProp.f (trunc _ _) refl λ x → cong (x ::_)
         g-f : (xs : MSet A) → g (f xs) ≡ xs
-        g-f = TODO
+        g-f = M.elimProp.f (trunc _ _) refl λ x → cong (x ::_)
 
 _ : (M≃N .fst) (1 :: 2 :: 3 :: []) ≡ (1 :: 2 :: 3 :: [])
 _ = refl
@@ -55,15 +52,17 @@ F≃M {ℓ} {A} = isoToEquiv (iso f g f-g g-f)
         module g-univ = M.univ (FreeCMon A) F.η
         g : MSet A → Free A
         g = g-univ.f♯
-        f-g-htpy : idfun (MSet A) ≡ f ∘ g
-        f-g-htpy = TODO
         f-g : (xs : MSet A) → f (g xs) ≡ xs
-        f-g xs i = f-g-htpy (~ i) xs
+        f-g = M.elimProp.f (trunc _ _) refl (λ x → cong (x ::_))
         g-f : (xs : Free A) → g (f xs) ≡ xs
-        g-f = TODO
+        g-f = F.elimProp.f (trunc _ _) (λ x → comm (η x) e ∙ unit (η x)) refl
+                           (λ {m₁} {m₂} ϕ ψ → cong g (f-univ.f♯-⊗ m₁ m₂) ∙ g-univ.f♯-++ (f m₁) (f m₂) ∙ cong₂ _⊗_ ϕ ψ)
 
 _ : F≃M .fst (η 1 ⊗ (η 2 ⊗ (η 3 ⊗ η 4))) ≡ 1 :: 2 :: 3 :: 4 :: []
 _ = refl
 
 _ : F≃M .fst ((η 1 ⊗ η 2) ⊗ (η 3 ⊗ η 4)) ≡ 1 :: 2 :: 3 :: 4 :: []
+_ = refl
+
+_ : F≃M .fst (((η 1 ⊗ η 2) ⊗ η 3) ⊗ η 4) ≡ 1 :: 2 :: 3 :: 4 :: []
 _ = refl

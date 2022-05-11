@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split #-}
+{-# OPTIONS --cubical --exact-split --safe #-}
 
 module set.Power where
 
@@ -6,7 +6,6 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sigma
 open import Agda.Primitive
-open import set.Prelude
 
 private
   variable
@@ -30,7 +29,7 @@ _* {A = A} {B} f = λ X b → ∃[ a ] f a b ⊓ X a
 map : {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} → (A → B) → ℙ A → ℙ B
 map {BSet = BSet} f = (η {ASet = BSet} ∘ f) *
 
-open import Cubical.HITs.PropositionalTruncation
+open import Cubical.HITs.PropositionalTruncation as P
 
 よ* : {ASet@(A , ϕ) : hSet ℓ} → (よ ASet) * ≡ idfun (ℙ A)
 よ* = funExt λ f → funExt λ a → ⇔toPath (rec (f a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ f (p i) ⟩) i0 ψ }) (λ ξ → ∣ a , refl , ξ ∣)
@@ -39,7 +38,8 @@ open import Cubical.HITs.PropositionalTruncation
 *よ f = funExt λ a → funExt λ b → ⇔toPath (λ ξ → ∣ a , ξ , refl ∣) (rec (f a b .snd) λ { (x , ξ , p) → transp (λ i → ⟨ f (p (~ i)) b ⟩) i0 ξ })
 
 _**_ : {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) : hSet ℓ} (g : B → ℙ C) (f : A → ℙ B) → (g * ∘ f) * ≡ g * ∘ f *
-g ** f = funExt λ α → funExt λ c → ⇔toPath (rec squash TODO) (rec squash TODO)
+g ** f = funExt λ α → funExt λ c → ⇔toPath (rec squash λ { (a , δ , θ) → P.map (λ { (b , κ , ϵ) → b , κ , ∣ a , ϵ , θ ∣ }) δ })
+                                               (rec squash λ { (b , δ , θ) → P.map (λ { (a , κ , ϵ) → a , ∣ b , δ , κ ∣ , ϵ }) θ })
 
 open import set.Monad
 
