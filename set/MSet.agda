@@ -40,9 +40,11 @@ module elimProp {A : Type ℓ₁} {B : MSet A → Type ℓ₂} (BProp : {xs : MS
   (_::*_ : (x : A) {xs : MSet A} → B xs → B (x :: xs)) where
 
   f : (xs : MSet A) → B xs
-  f = elim.f []* _::*_
-             (λ x y {xs} b → toPathP (BProp (transp (λ i → B (swap x y xs i)) i0 (x ::* (y ::* b))) (y ::* (x ::* b))))
-             (λ _ → isProp→isSet BProp)
+  f = elim.f []* _::*_ ϕ (λ _ → isProp→isSet BProp)
+        where
+          abstract
+            ϕ : (x y : A) {xs : MSet A} (b : B xs) → PathP (λ i → B (swap x y xs i)) (x ::* (y ::* b)) (y ::* (x ::* b))
+            ϕ x y {xs} b = toPathP (BProp (transp (λ i → B (swap x y xs i)) i0 (x ::* (y ::* b))) (y ::* (x ::* b)))
 
 module rec {A : Type ℓ₁} {B : Type ℓ₂}
   ([]* : B)

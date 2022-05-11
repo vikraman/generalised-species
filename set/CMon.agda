@@ -16,8 +16,9 @@ record CMon {ℓ} (M : Type ℓ) : Type ℓ where
     assoc-⊗ : ∀ x y z → x ⊗ (y ⊗ z) ≡ (x ⊗ y) ⊗ z
     isSetM : isSet M
 
-  unitr-⊗ : ∀ x → x ⊗ e ≡ x
-  unitr-⊗ x = comm-⊗ x e ∙ unit-⊗ x
+  abstract
+    unitr-⊗ : ∀ x → x ⊗ e ≡ x
+    unitr-⊗ x = comm-⊗ x e ∙ unit-⊗ x
 
 module _ {ℓ₁ ℓ₂} {M : Type ℓ₁} {N : Type ℓ₂} (CM : CMon M) (CN : CMon N) where
 
