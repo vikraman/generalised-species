@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split #-}
+{-# OPTIONS --cubical --exact-split --safe #-}
 
 module set.MSet.Paths where
 
@@ -10,7 +10,6 @@ open import Cubical.Data.Sum as S
 import Cubical.Data.Empty as E
 import Cubical.HITs.PropositionalTruncation as P
 
-open import set.Prelude
 open import set.MSet
 open import set.MSet.Universal
 open import set.MSet.Length

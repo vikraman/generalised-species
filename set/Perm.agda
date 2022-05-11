@@ -218,7 +218,7 @@ tree (suc zero) (x ∷ []) (y ∷ []) (p , ϕ) =
 tree (suc (suc n)) (x ∷ xs) (y ∷ ys) (p , ϕ) with biEq? (–> p zero) zero
 ... | eq ψ =
   let ε : xs ≅ ys
-      ε = ppred p ψ , {!!}
+      ε = ppred p ψ , TODO
   in cons-cong (cons-inj₁ (subst (λ z → lookup z (x ∷ xs) ∷ lookup (–> p (suc zero)) (x ∷ xs)
                                        ∷ FinVec→Vec (Vec→FinVec (x ∷ xs) ∘ ((–> p) ∘ λ z → (suc (suc z)))) ≡ y ∷ ys)
                                  ψ ϕ))

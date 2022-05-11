@@ -59,8 +59,8 @@ module _ {A B : Type ℓ} (f : A ↝ B) where
   _^♯ : MSet B × MSet A → hProp _
   _^♯ (β , α) = univ.f♯ (hProp^CMon (MSet A) {MSetCMon A}) _^ β α
 
-id : {A : Type ℓ} → A ↝ A
-id (α , a) = よ (MSet _ , trunc) α [ a ]
+ids : {A : Type ℓ} → A ↝ A
+ids (α , a) = よ (MSet _ , trunc) α [ a ]
 
 module _ {A B C : Type ℓ} where
   infixr 10 _⊚_
@@ -105,11 +105,11 @@ module _ {A B : Type ℓ} where
 
 module _ {A B C : Type ℓ} where
 
-  curry : (C ⊎ A) ↝ B → C ↝ (MSet A × B)
-  curry p (γ , α , b) = p (g (γ , α) , b)
+  currys : (C ⊎ A) ↝ B → C ↝ (MSet A × B)
+  currys p (γ , α , b) = p (g (γ , α) , b)
 
-  uncurry : C ↝ (MSet A × B) → (C ⊎ A) ↝ B
-  uncurry p (x , b) = let (γ , α) = f x in p (γ , α , b)
+  uncurrys : C ↝ (MSet A × B) → (C ⊎ A) ↝ B
+  uncurrys p (x , b) = let (γ , α) = f x in p (γ , α , b)
 
 module _ {A B : Type ℓ} where
 

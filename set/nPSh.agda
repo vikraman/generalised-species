@@ -59,7 +59,7 @@ unitr {A = (A , ϕ)} {(B , ψ)} f = funExt λ a → funExt λ b → h a b
 assoc : {A@(A , ϕ) B@(B , ψ) C@(C , χ) : TypeOfHLevel ℓ n} (f : A → PSh B) (g : B → PSh C) → g * ∘ f * ≡ (g * ∘ f) *
 assoc {A = (A , ϕ)} {(B , ψ)} {(C , χ)} f g = funExt λ X → funExt λ c → h X c
   where h : (X : PSh A) (c : C)
-          → (Σ B (λ b → (g b c .fst) × (Σ A (λ a → (f a b .fst) × (X a .fst)))) , isOfHLevelΣ n ψ (λ b → isOfHLevel× n (g b c .snd) (isOfHLevelΣ n ϕ (λ a → isOfHLevel× n (f a b .snd) (X a .snd)))))
+         → (Σ B (λ b → (g b c .fst) × (Σ A (λ a → (f a b .fst) × (X a .fst)))) , isOfHLevelΣ n ψ (λ b → isOfHLevel× n (g b c .snd) (isOfHLevelΣ n ϕ (λ a → isOfHLevel× n (f a b .snd) (X a .snd)))))
           ≡ (Σ A (λ a → (Σ B (λ b → (g b c .fst) × (f a b .fst))) × (X a .fst)) , isOfHLevelΣ n ϕ (λ a → isOfHLevelΣ n (isOfHLevelΣ n ψ (λ b → isOfHLevel× n (g b c .snd) (f a b .snd))) (λ _ → X a .snd)))
         h X c = Σ≡Prop (λ _ → isPropIsOfHLevel n) (ua (isoToEquiv (iso t s t-s s-t)))
           where t : Σ B (λ b → (g b c .fst) × (Σ A (λ a → (f a b .fst) × (X a .fst)))) → Σ A (λ a → (Σ B (λ b → (g b c .fst) × (f a b .fst))) × (X a .fst))
@@ -70,13 +70,3 @@ assoc {A = (A , ϕ)} {(B , ψ)} {(C , χ)} f g = funExt λ X → funExt λ c →
                 t-s (a , (b , u , v) , w) = refl
                 s-t : ∀ z → s (t z) ≡ z
                 s-t (b , u , a , v , w) = refl
-
-open import set.Monad
-
--- nPshRMonad : ∀ {ℓ} → RMonad {ℓ} PSh
--- RMonad.map nPshRMonad = {!!}
--- RMonad.η nPshRMonad = {!!}
--- nPshRMonad RMonad.* = {!!}
--- RMonad.unitl nPshRMonad = {!!}
--- RMonad.unitr nPshRMonad = {!!}
--- RMonad.assoc nPshRMonad = {!!}

@@ -43,9 +43,5 @@ g ** f = funExt λ α → funExt λ c → ⇔toPath (rec squash TODO) (rec squas
 
 open import set.Monad
 
--- PSetRMonad : ∀ {ℓ} → RMonadhSet {ℓ} ℙ
-
--- ((P x) ⊓ ((x ≡ a) , ?))
-
 codensity : ∀ {ℓ} {ASet@(A , ϕ) : hSet ℓ} {a : A} {P : A → hProp ℓ} → (∃[ x ] ((x ≡ a) , ϕ x a) ⊓ P x) ≡ P a
 codensity {a = a} {P} = ⇔toPath (rec (P a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ P (p i) ⟩) i0 ψ }) (λ p → ∣ (a , refl , p) ∣)

@@ -15,7 +15,7 @@ open import set.MSet
 open import set.MSet.Paths
 open import set.MSet.Universal using (_++_)
 open import set.CMon using (CMon)
-open import set.CCoMon using (module univ)
+open import set.CCoMon -- using (module univ)
 
 private
   variable
@@ -31,19 +31,19 @@ _∗ = _# {BSet = MSet _ , trunc}
 ε : MSet A ⇸ A
 ε = (η ∗) †
 
-ϕ-⊗ : (MSet A ⊗ MSet B) ⇸ MSet (A ⊗ B)
-ϕ-⊗ = univ.f♯ TODO TODO
+-- ϕ-⊗ : (MSet A ⊗ MSet B) ⇸ MSet (A ⊗ B)
+-- ϕ-⊗ = univ.f♯ TODO TODO
 
-IICMon : CMon {lzero} II
-CMon.e IICMon = tt*
-CMon._⊗_ IICMon = const (const tt*)
-CMon.unit-⊗ IICMon = isPropUnit* tt*
-CMon.comm-⊗ IICMon = λ _ _ → refl
-CMon.assoc-⊗ IICMon = λ _ _ _ → refl
-CMon.isSetM IICMon = isSetUnit*
+-- IICMon : CMon {lzero} II
+-- CMon.e IICMon = tt*
+-- CMon._⊗_ IICMon = const (const tt*)
+-- CMon.unit-⊗ IICMon = isPropUnit* tt*
+-- CMon.comm-⊗ IICMon = λ _ _ → refl
+-- CMon.assoc-⊗ IICMon = λ _ _ _ → refl
+-- CMon.isSetM IICMon = isSetUnit*
 
-ϕ-II : II ⇸ MSet II
-ϕ-II = univ.f♯ IICMon (hRel.idr (II , isSetUnit*))
+-- ϕ-II : II ⇸ MSet II
+-- ϕ-II = univ.f♯ IICMon (hRel.idr (II , isSetUnit*))
 
 w : MSet A ⇸ (MSet A ⊗ MSet A)
 w = (uncurry _++_ ∗) †
