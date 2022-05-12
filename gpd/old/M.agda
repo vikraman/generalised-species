@@ -29,8 +29,8 @@ _⊗_ : ∀ (xs ys : M A) → M A
 (x ∷ xs) ⊗ ys = x ∷ xs ⊗ ys
 swap x y xs i ⊗ ys =
   swap x y (xs ⊗ ys) i
-hexagon x y z xs p i ⊗ ys =
-  hexagon x y z (xs ⊗ ys) p i -- transp (λ i → A) i x != x of type A
+hexagon x y z xs i j ⊗ ys =
+  hexagon x y z (xs ⊗ ys) i j -- transp (λ i → A) i x != x of type A
 swap2 x y xs i j ⊗ ys =
   swap2 x y (xs ⊗ ys) i j
 trunc xs zs p q u v i j k ⊗ ys =
