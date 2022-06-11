@@ -39,14 +39,14 @@ data _≈₀_ {ℓ} {A : Type ℓ} : {n : ℕ} → Vec A n → Vec A n → Type 
            → (a ∷ as) ≈₀ (b ∷ bs)
 
 _≈_ : Vec A n → Vec A n → Type _
-xs ≈ ys = ∥ xs ≈₀ ys ∥
+xs ≈ ys = ∥ xs ≈₀ ys ∥₁
 
 ≈₀-refl : (xs : Vec A n) → xs ≈₀ xs
 ≈₀-refl [] = nil-refl
 ≈₀-refl (x ∷ xs) = cons-cong refl (≈₀-refl xs)
 
 ≈-refl : (xs : Vec A n) → xs ≈ xs
-≈-refl = ∣_∣ ∘ ≈₀-refl
+≈-refl = ∣_∣₁ ∘ ≈₀-refl
 
 ≈₀-sym : (xs ys : Vec A n) → xs ≈₀ ys → ys ≈₀ xs
 ≈₀-sym .[] .[] nil-refl = nil-refl
@@ -245,7 +245,7 @@ _≈₁_ : List A → List A → Type _
 xs ≈₁ ys = ≈₁-aux (L.length xs) (List→Vec xs) (L.length ys) (List→Vec ys)
 
 _≈'_ : List A → List A → Type _
-xs ≈' ys = ∥ xs ≈₁ ys ∥
+xs ≈' ys = ∥ xs ≈₁ ys ∥₁
 
 -- subst doesn't compute on refl
 ≈₁-refl : (xs : List A) → xs ≈₁ xs
@@ -254,7 +254,7 @@ xs ≈' ys = ∥ xs ≈₁ ys ∥
                           (≈₀-refl (List→Vec xs))
 
 ≈'-refl : (xs : List A) → xs ≈' xs
-≈'-refl = ∣_∣ ∘ ≈₁-refl
+≈'-refl = ∣_∣₁ ∘ ≈₁-refl
 
 postulate
   ≈₁-sym : (xs ys : List A) → xs ≈₁ ys → ys ≈₁ xs

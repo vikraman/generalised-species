@@ -32,10 +32,10 @@ data _≈₀_ {A : Type ℓ} : NSet A → NSet A → Type ℓ where
            → (a :: as) ≈₀ (b :: bs)
 
 _≈_ : {A : Type ℓ} → NSet A → NSet A → Type ℓ
-as ≈ bs = ∥ as ≈₀ bs ∥
+as ≈ bs = ∥ as ≈₀ bs ∥₁
 
 ≈-refl : (as : NSet A) → as ≈ as
-≈-refl = elimProp.f squash ∣ nil-refl ∣ λ _ → P.map (cons-cong refl)
+≈-refl = elimProp.f squash₁ ∣ nil-refl ∣₁ λ _ → P.map (cons-cong refl)
 
 encode : {as bs : NSet A} → as ≡ bs → as ≈ bs
 encode {as = as} = J (λ xs _ → as ≈ xs) (≈-refl as)
@@ -49,7 +49,7 @@ decode : {as bs : NSet A} → as ≈ bs → as ≡ bs
 decode = P.rec (trunc _ _) decode₀
 
 ≈-equiv-≡ : {as bs : NSet A} → (as ≈ bs) ≃ (as ≡ bs)
-≈-equiv-≡ = propBiimpl→Equiv squash (trunc _ _) decode encode
+≈-equiv-≡ = propBiimpl→Equiv squash₁ (trunc _ _) decode encode
 
 ≈₀-sym : (as bs : NSet A) → as ≈₀ bs → bs ≈₀ as
 ≈₀-sym .[] .[] nil-refl = nil-refl
@@ -100,7 +100,7 @@ module _ {ℓ} {A : Type ℓ} where
   ≋-isEquivRel = equivRel ≋-refl ≋-sym ≋-trans
 
   ≋-isPropValued : isPropValued
-  ≋-isPropValued _ _ p q = squash p q
+  ≋-isPropValued _ _ p q = squash₁ p q
 
   ≋-isEffective : isEffective
   ≋-isEffective = isEquivRel→isEffective ≋-isPropValued ≋-isEquivRel

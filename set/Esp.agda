@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split --no-import-sorts --experimental-lossy-unification #-}
+{-# OPTIONS --cubical --exact-split --no-import-sorts --allow-unsolved-metas #-}
 
 module set.Esp where
 

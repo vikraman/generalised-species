@@ -105,11 +105,11 @@ module _ (a : A) where
        → ∃ (MSet (MSet A)) λ t → (μ t ≡ []) × ([ a ] :: t ≡ s)
   lem72 s =
     elimProp.f {B = λ s → [ a ] ≡ μ s → ∃ (MSet (MSet A)) λ t → (μ t ≡ []) × ([ a ] :: t ≡ s)}
-      (isPropΠ (λ _ → P.squash))
+      (isPropΠ (λ _ → P.squash₁))
       (λ ψ → E.rec (snotz (cong length ψ)))
       (λ x {xs} ψ χ →
         let δ = ++-sing-out {xs = x} {ys = μ xs} (sym (χ ∙ μ-cons x xs))
-        in rec (λ { (α , β) → P.∣ xs , β , cong (_:: xs) (α ⁻¹) ∣ })
+        in rec (λ { (α , β) → P.∣ xs , β , cong (_:: xs) (α ⁻¹) ∣₁ })
                (λ { (α , β) →
                  let z = ψ (β ⁻¹) in
                  P.map (λ { (t' , γ , δ) → [] :: t' , μ-cons [] t' ∙ γ , swap [ a ] [] t' ∙ cong₂ _::_ (α ⁻¹) δ }) z })

@@ -38,10 +38,10 @@ data _≈₀_ {ℓ} {A : Type ℓ} : MSet A → MSet A → Type ℓ where
            → (a :: as) ≈₀ (b :: bs)
 
 _≈_ : MSet A → MSet A → Type _
-xs ≈ ys = ∥ xs ≈₀ ys ∥
+xs ≈ ys = ∥ xs ≈₀ ys ∥₁
 
 ≈-refl : (xs : MSet A) → xs ≈ xs
-≈-refl = elimProp.f squash ∣ nil-refl ∣ (λ x → P.map cons-cong)
+≈-refl = elimProp.f squash₁ ∣ nil-refl ∣₁ (λ x → P.map cons-cong)
 
 encode : (xs ys : MSet A) → xs ≡ ys → xs ≈ ys
 encode xs ys = J (λ ys p → xs ≈ ys) (≈-refl xs)
@@ -55,7 +55,7 @@ decode : (xs ys : MSet A) → xs ≈ ys → xs ≡ ys
 decode xs ys = P.rec (trunc xs ys) (decode₀ xs ys)
 
 ≈-equiv-≡ : {xs ys : MSet A} → (xs ≈ ys) ≃ (xs ≡ ys)
-≈-equiv-≡ {xs = xs} {ys = ys} = propBiimpl→Equiv squash (trunc xs ys) (decode xs ys) (encode xs ys)
+≈-equiv-≡ {xs = xs} {ys = ys} = propBiimpl→Equiv squash₁ (trunc xs ys) (decode xs ys) (encode xs ys)
 
 module _ {ℓ} {A : Type ℓ} where
   open BinaryRelation {A = MSet A} _≈_
@@ -121,4 +121,4 @@ module thm61 {A : Type ℓ} {ϕ : isSet A}
   thm61 : (a b : A) (as bs : MSet A) → (a :: as) ≡ (b :: bs) → goal a b as bs .fst
   thm61 a b as bs p =
     let q = lem4 a as [ b ] bs p
-    in S.rec (λ α → L.inl (lem2 a b as bs α)) (λ β → L.inr P.∣ β ∣) q
+    in S.rec (λ α → L.inl (lem2 a b as bs α)) (λ β → L.inr P.∣ β ∣₁) q

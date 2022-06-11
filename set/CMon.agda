@@ -140,10 +140,12 @@ univ-η A = funExt p
 
 open import set.Monad
 
--- FreeCMonMonad : ∀ {ℓ} → Monad {ℓ} Free
--- Monad.map FreeCMonMonad f = univ.f♯ (FreeCMon _) λ a → Free.η (f a)
--- Monad.η FreeCMonMonad = Free.η
--- FreeCMonMonad Monad.* = univ.f♯ (FreeCMon _)
--- Monad.unitl FreeCMonMonad = univ-η _
--- Monad.unitr FreeCMonMonad = univ.f♯-η (FreeCMon _)
--- Monad.assoc FreeCMonMonad f g = funExt (elimProp.f (trunc _ _) (λ _ → refl) refl λ p q → {!!})
+FreeCMonMonad : ∀ {ℓ} → Monad {ℓ} Free
+Monad.map FreeCMonMonad f = univ.f♯ (FreeCMon _) λ a → Free.η (f a)
+Monad.η FreeCMonMonad = Free.η
+FreeCMonMonad Monad.* = univ.f♯ (FreeCMon _)
+Monad.unitl FreeCMonMonad = univ-η _
+Monad.unitr FreeCMonMonad = univ.f♯-η (FreeCMon _)
+Monad.assoc FreeCMonMonad f g =
+  sym (univ.f♯-unique (FreeCMon _) (univ.f♯ (FreeCMon _) g ∘ f) (univ.f♯ (FreeCMon _) g ∘ univ.f♯ (FreeCMon _) f)
+                      (λ a → refl) refl (λ m₁ m₂ → refl))

@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --exact-split #-}
+{-# OPTIONS --cubical --exact-split --safe #-}
 
 module set.hRel where
 
@@ -68,11 +68,8 @@ module _ {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} where
   ω' : A ≡ B → A ⇸ B
   ω' p = subst (A ⇸_) p (idr ASet)
 
-  -- ω : ASet ≡ BSet → ASet ≅ BSet
-  -- ω p = subst (λ X → ASet ≅ X) p (id ASet , id ASet , {!!})
-
-  -- isEquivω : isEquiv ω
-  -- isEquivω = {!!}
+  ω : ASet ≡ BSet → ASet ≅ BSet
+  ω p = subst (ASet ≅_) p (idr ASet , idr ASet , unitl {ASet = ASet} {BSet = ASet} , unitl {ASet = ASet} {BSet = ASet})
 
 data O {ℓ} : Type ℓ where
 

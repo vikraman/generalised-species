@@ -42,20 +42,20 @@ x q∷ xs = Q.rec squash/ (λ xs → Q.[ x ∷ xs ]) (λ a b r → eq/ (x ∷ a)
 ++-cong₀ (comm-rel p q) r = comm-rel (++-cong₀ p r) (++-cong₀ q (≈₀-refl _))
 
 _q++_ : ∀ (xs ys : QSet A) → QSet A
-_q++_ = qmap2 _≈_ _++_ (λ xs → ∣ ≈₀-refl xs ∣) (P.map2 ++-cong₀)
+_q++_ = qmap2 _≈_ _++_ (λ xs → ∣ ≈₀-refl xs ∣₁) (P.map2 ++-cong₀)
 
 unitl-q++₀ : (xs : List A) → ([] ++ xs) ≈₀ xs
 unitl-q++₀ xs = ≈₀-refl xs
 
 unitl-q++ : (xs : QSet A) → Q.[ [] ] q++ xs ≡ xs
-unitl-q++ = elimProp (λ _ → squash/ _ _) λ xs → eq/ _ _ ∣ unitl-q++₀ xs ∣
+unitl-q++ = elimProp (λ _ → squash/ _ _) λ xs → eq/ _ _ ∣ unitl-q++₀ xs ∣₁
 
 unitr-q++₀ : (xs : List A) → (xs ++ []) ≈₀ xs
 unitr-q++₀ [] = nil-refl
 unitr-q++₀ (x ∷ xs) = cons-cong refl (unitr-q++₀ xs)
 
 unitr-q++ : (xs : QSet A) → xs q++ Q.[ [] ] ≡ xs
-unitr-q++ = elimProp (λ _ → squash/ _ _) λ xs → eq/ _ _ ∣ unitr-q++₀ xs ∣
+unitr-q++ = elimProp (λ _ → squash/ _ _) λ xs → eq/ _ _ ∣ unitr-q++₀ xs ∣₁
 
 assoc-q++₀ : (xs ys zs : List A) → xs ++ (ys ++ zs) ≈₀ (xs ++ ys) ++ zs
 assoc-q++₀ [] ys zs = ≈₀-refl (ys ++ zs)
@@ -66,7 +66,7 @@ assoc-q++ =
   elimProp (λ _ → isPropΠ (λ _ → isPropΠ (λ _ → squash/ _ _))) λ xs →
     elimProp (λ _ → isPropΠ λ _ → squash/ _ _) λ ys →
       elimProp (λ _ → squash/ _ _) λ zs →
-        eq/ _ _ ∣ assoc-q++₀ xs ys zs ∣
+        eq/ _ _ ∣ assoc-q++₀ xs ys zs ∣₁
 
 swap-rel : (x y : A) (xs : List A) → x ∷ y ∷ xs ≈₀ y ∷ x ∷ xs
 swap-rel x y xs = comm-rel (≈₀-refl (y ∷ xs)) (≈₀-refl (x ∷ xs))
@@ -86,7 +86,7 @@ comm-q++ : (xs ys : QSet A) → xs q++ ys ≡ ys q++ xs
 comm-q++ =
   elimProp (λ _ → isPropΠ (λ _ → squash/ _ _)) λ xs →
     elimProp (λ _ → squash/ _ _) λ ys →
-      eq/ _ _ ∣ comm-++₀ xs ys ∣
+      eq/ _ _ ∣ comm-++₀ xs ys ∣₁
 
 open import set.CMon using (CMon; CMonHom; CMonHom≡)
 

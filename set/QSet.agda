@@ -25,7 +25,7 @@ data _≈₀_ {ℓ} {A : Type ℓ} : List A → List A → Type ℓ where
            → (a ∷ as) ≈₀ (b ∷ bs)
 
 _≈_ : List A → List A → Type _
-xs ≈ ys = ∥ xs ≈₀ ys ∥
+xs ≈ ys = ∥ xs ≈₀ ys ∥₁
 
 import set.Perm as R
 
@@ -38,7 +38,7 @@ postulate
 ≈₀-refl (x ∷ xs) = cons-cong refl (≈₀-refl xs)
 
 ≈-refl : (xs : List A) → xs ≈ xs
-≈-refl = ∣_∣ ∘ ≈₀-refl
+≈-refl = ∣_∣₁ ∘ ≈₀-refl
 
 ≈₀-sym : (xs ys : List A) → xs ≈₀ ys → ys ≈₀ xs
 ≈₀-sym .[] .[] nil-refl = nil-refl

@@ -32,16 +32,16 @@ map {BSet = BSet} f = (η {ASet = BSet} ∘ f) *
 open import Cubical.HITs.PropositionalTruncation as P
 
 よ* : {ASet@(A , ϕ) : hSet ℓ} → (よ ASet) * ≡ idfun (ℙ A)
-よ* = funExt λ f → funExt λ a → ⇔toPath (rec (f a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ f (p i) ⟩) i0 ψ }) (λ ξ → ∣ a , refl , ξ ∣)
+よ* = funExt λ f → funExt λ a → ⇔toPath (rec (f a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ f (p i) ⟩) i0 ψ }) (λ ξ → ∣ a , refl , ξ ∣₁)
 
 *よ : {ASet@(A , ϕ) BSet@(B , ψ) : hSet ℓ} (f : A → ℙ B) → f ≡ f * ∘ (よ ASet)
-*よ f = funExt λ a → funExt λ b → ⇔toPath (λ ξ → ∣ a , ξ , refl ∣) (rec (f a b .snd) λ { (x , ξ , p) → transp (λ i → ⟨ f (p (~ i)) b ⟩) i0 ξ })
+*よ f = funExt λ a → funExt λ b → ⇔toPath (λ ξ → ∣ a , ξ , refl ∣₁) (rec (f a b .snd) λ { (x , ξ , p) → transp (λ i → ⟨ f (p (~ i)) b ⟩) i0 ξ })
 
 _**_ : {ASet@(A , ϕ) BSet@(B , ψ) CSet@(C , ξ) : hSet ℓ} (g : B → ℙ C) (f : A → ℙ B) → (g * ∘ f) * ≡ g * ∘ f *
-g ** f = funExt λ α → funExt λ c → ⇔toPath (rec squash λ { (a , δ , θ) → P.map (λ { (b , κ , ϵ) → b , κ , ∣ a , ϵ , θ ∣ }) δ })
-                                               (rec squash λ { (b , δ , θ) → P.map (λ { (a , κ , ϵ) → a , ∣ b , δ , κ ∣ , ϵ }) θ })
+g ** f = funExt λ α → funExt λ c → ⇔toPath (rec squash₁ λ { (a , δ , θ) → P.map (λ { (b , κ , ϵ) → b , κ , ∣ a , ϵ , θ ∣₁ }) δ })
+                                               (rec squash₁ λ { (b , δ , θ) → P.map (λ { (a , κ , ϵ) → a , ∣ b , δ , κ ∣₁ , ϵ }) θ })
 
 open import set.Monad
 
 codensity : ∀ {ℓ} {ASet@(A , ϕ) : hSet ℓ} {a : A} {P : A → hProp ℓ} → (∃[ x ] ((x ≡ a) , ϕ x a) ⊓ P x) ≡ P a
-codensity {a = a} {P} = ⇔toPath (rec (P a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ P (p i) ⟩) i0 ψ }) (λ p → ∣ (a , refl , p) ∣)
+codensity {a = a} {P} = ⇔toPath (rec (P a .snd) λ { (x , p , ψ) → transp (λ i → ⟨ P (p i) ⟩) i0 ψ }) (λ p → ∣ (a , refl , p) ∣₁)

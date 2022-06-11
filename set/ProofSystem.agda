@@ -33,7 +33,7 @@ data _≈₀_ {ℓ} {A : Type ℓ} : List A → List A → Type ℓ where
            → (a ∷ as) ≈₀ (b ∷ bs)
 
 _≈_ : List A → List A → Type _
-xs ≈ ys = ∥ xs ≈₀ ys ∥
+xs ≈ ys = ∥ xs ≈₀ ys ∥₁
 
 ≈₀-refl : (xs : List A) → xs ≈₀ xs
 ≈₀-refl [] = nil-refl
@@ -85,7 +85,7 @@ module _ {ℓ} {A : Type ℓ} where
   open BinaryRelation {A = List A} _≈_
 
   ≈-refl : isRefl
-  ≈-refl as = ∣ ≈₀-refl as ∣
+  ≈-refl as = ∣ ≈₀-refl as ∣₁
 
   ≈-sym : isSym
   ≈-sym as bs = P.map (≈₀-sym as bs)
@@ -97,7 +97,7 @@ module _ {ℓ} {A : Type ℓ} where
   ≈-isEquivRel = equivRel ≈-refl ≈-sym ≈-trans
 
   ≈-isPropValued : isPropValued
-  ≈-isPropValued _ _ p q = squash p q
+  ≈-isPropValued _ _ p q = squash₁ p q
 
   ≈-isEffective : isEffective
   ≈-isEffective = isEquivRel→isEffective ≈-isPropValued ≈-isEquivRel
