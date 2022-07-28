@@ -8,6 +8,7 @@ open import Cubical.Data.Sigma
 open import Cubical.Data.Sum
 open import Cubical.Data.Empty
 open import Cubical.Data.Unit
+open import Cubical.HITs.PropositionalTruncation as P
 open import Agda.Primitive
 
 open import set.Prelude
@@ -59,6 +60,9 @@ module _ {A B : Type ℓ} (f : A ↝ B) where
   _^♯ : MSet B × MSet A → hProp _
   _^♯ (β , α) = univ.f♯ (hProp^CMon (MSet A) {MSetCMon A}) _^ β α
 
+  _^♯-++ : ∀ β₁ β₂ α → (β₁ ++ β₂ , α) ^♯ ≡ {!!}
+  _^♯-++ β₁ β₂ α = let z = univ.f♯-++ (hProp^CMon (MSet A) {MSetCMon A}) _^ β₁ β₂ in {!!}
+
 ids : {A : Type ℓ} → A ↝ A
 ids (α , a) = よ (MSet _ , trunc) α [ a ]
 
@@ -91,7 +95,12 @@ module _ {A B C : Type ℓ} where
           h (α , inl b) = (π₁ ⊚ f) (α , b)
                         ≡⟨ refl ⟩
                           (L.∃[ β ∶ MSet (B ⊎ C) ] (f ^♯) (β , α) L.⊓ π₁ (β , b))
-                        ≡⟨ TODO ⟩
+                        ≡⟨ L.⇔toPath (P.rec (f (α , inl b) .snd)
+                                       λ { (xs , p , ϕ) →
+                                            let q : typ ((f ^♯) ([ inl b ] , α))
+                                                q = subst (λ xs → typ ((f ^♯) (xs , α))) (sym ϕ) p
+                                            in P.rec (f (α , inl b) .snd) (λ { (ys , β) → {!!} }) q })
+                                      (λ ϕ → ∣ [ inl b ] , ∣ α , ∣ [] , ϕ , refl , sym (unitr-++ α) ∣₁ ∣₁ , refl ∣₁) ⟩
                           f (α , inl b)
                         ∎
           h (α , inr c) = TODO
@@ -119,4 +128,4 @@ module _ {A B : Type ℓ} where
 module _ {A B C : Type ℓ} where
 
   _~ : C ↝ (A × B) → (C ⊎ A) ↝ B
-  (p ~) (x , b) = TODO 
+  (p ~) (xs , b) = let z = p {!!} in {!!}

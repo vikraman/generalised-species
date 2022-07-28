@@ -162,6 +162,42 @@ cons-del : {x : A} {f : FinData (suc n) → A}
         → cons x (del zero f) ≡ f
 cons-del ϕ = funExt λ { zero → ϕ ; (suc n) → refl }
 
+del-comm : {f : FinData (suc (suc n)) → A}
+        → {i j : FinData (suc n)}
+        → (i ≡ j → ⊥)
+        → del i (del (weakenFin j) f) ≡ del j (del (weakenFin i) f)
+del-comm ϕ = {!!}
+
+del-comm-zero : {f : FinData (suc (suc n)) → A}
+             → {i : FinData (suc n)}
+             → (i ≡ zero → ⊥)
+             → del zero (del (weakenFin i) f) ≡ del i (del zero f)
+del-comm-zero {i = i} ϕ = del-comm {i = zero} {j = i} (ϕ ∘ sym)
+
+-- del-∘-zero-yes : {g : FinData (suc (suc n)) → A} {σ : PermData (suc (suc n)) (suc (suc n))}
+--                → del zero (g ∘ –> σ) zero ≡ g (suc (–> (ddel zero σ) zero))
+-- del-∘-zero-yes {g = g} {σ = σ} = {!!}
+
+-- del-∘-zero : {g : FinData (suc (suc n)) → A} {σ : PermData (suc (suc n)) (suc (suc n))}
+--            → del zero (g ∘ –> σ) zero ≡ del (–> σ zero) g (–> (ddel zero σ) zero)
+-- del-∘-zero {g = g} {σ = σ} = {!!}
+
+-- with lt? (–> σ zero) (suc (–> (ddel zero σ) zero))
+-- ... | yes ϕ = refl
+-- ... | no ¬ϕ = refl
+
+  -- let z = lt? zero (suc zero)
+  --     w = lt? (–> σ zero) (suc (–> (ddel zero σ) zero))
+  -- in {!!}
+
+-- with lt? zero (suc zero)
+-- ... | yes ϕ = {!!}
+-- ... | no ¬ϕ = ?
+
+-- del-∘ : {g : FinData (suc n) → A} {σ : PermData (suc n) (suc n)}
+--       → del zero (g ∘ –> σ) ≡ del (–> σ zero) g ∘ –> (ddel zero σ)
+-- del-∘ = funExt λ { zero → {!!} ; (suc f) → {!!} }
+
 tree : (n : ℕ) (f g : FinData n → A)
     → (n , f) ≅ (n , g)
     → (L→V (n , f)) ≈₀ (L→V (n , g))
@@ -183,10 +219,11 @@ tree (suc (suc n)) f g (p , ϕ) with biEq? (–> p zero) zero
   in comm-rel {cs = L→V (n , h)}
        (tree (suc n)
          (del zero f) (cons (g zero) h)
-         (ddel zero p ,
-           cons-inj {x = f zero} {y = f zero} {f = del zero f} {g = del (–> p zero) (g ∘ –> p)}
-             (cons-del {f = f} refl ∙ ϕ ∙ sym (cons-del {x = g (–> p zero)} refl) ∙ cong (λ z → cons z (del zero (g ∘ –> p))) (sym δ) ∙ TODO) refl
-           ∙ TODO))
+         (ddel zero p , TODO))
        (tree (suc n)
          (cons (f zero) h) (del zero g)
-         (ddel zero p , TODO))
+         (did , {!!}))
+
+-- cons-inj {x = f zero} {y = f zero} {f = del zero f} {g = del (–> p zero) (g ∘ –> p)}
+--              (cons-del {f = f} refl ∙ ϕ ∙ sym (cons-del {x = g (–> p zero)} refl) ∙ cong (λ z → cons z (del zero (g ∘ –> p))) (sym δ) ∙ TODO) refl
+--            ∙ TODO

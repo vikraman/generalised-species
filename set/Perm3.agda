@@ -134,6 +134,12 @@ module _ (i : Fin (suc n)) (p : Perm (suc n) (suc m)) where
   pdel = compEquiv (invEquiv (punchOutEquiv {i = i}))
                    (compEquiv q (punchOutEquiv {i = –> p i}))
 
+module _ (p : Perm (suc (suc n)) (suc (suc m))) where
+
+  pdel-zero-β : –> (pdel fzero p) fzero ≡ fpred (–> p fone)
+  pdel-zero-β = {!refl!}
+
+
 PermData : ℕ → ℕ → Type ℓ-zero
 PermData n m = FinData n ≃ FinData m
 
@@ -217,3 +223,44 @@ _ = equivEq (funExt λ { zero → refl ; (suc zero) → refl })
 
 _ : ddel zero (dswap {n = 1}) ≡ did {n = 2}
 _ = equivEq (funExt λ { zero → refl ; (suc zero) → refl })
+
+module _ (p : PermData (suc (suc n)) (suc (suc m))) where
+
+  ddel-zero-β : –> (ddel zero p) zero ≡ predFin (–> p one)
+  ddel-zero-β = TODO
+
+biEq-rec : {i j : FinData n} → (i ≡ j → A) → (¬ i ≡ j → A) → biEq i j → A
+biEq-rec f g (eq ϕ) = f ϕ
+biEq-rec f g (¬eq ϕ) = g ϕ
+
+biEq-rec-cst-η : {i j : FinData n} {ϕ : biEq i j} → (a : A) → biEq-rec (λ _ → a) (λ _ → a) ϕ ≡ a
+biEq-rec-cst-η {ϕ = eq ϕ} a = refl
+biEq-rec-cst-η {ϕ = ¬eq ϕ} a = refl
+
+biEq?-refl : (i : FinData n) → biEq? i i ≡ eq refl
+biEq?-refl zero = refl
+biEq?-refl (suc i) with D.discreteFin i i
+... | yes p = let q = D.isSetFin i i p refl in cong eq λ j k → suc (q j k)
+... | no ¬p = E.rec (¬p refl)
+
+module _ (p : PermData (suc (suc n)) (suc (suc n))) where
+
+  ddel0 : PermData (suc n) (suc n)
+  ddel0 = isoToEquiv (iso f g f-g g-f)
+    where
+      f : _
+      f zero = predFin (–> p zero)
+      f (suc i) = suc i
+      g : _
+      g i = biEq-rec (λ _ → zero) (λ _ → i) (biEq? i (predFin (–> p zero)))
+
+      f-g : _
+      f-g zero = cong f (biEq-rec-cst-η {ϕ = biEq? zero (predFin (–> p zero))} zero) ∙ {!!}
+      f-g (suc i) = {!!}
+
+      g-suc : {i : FinData n} → g (suc i) ≡ suc i
+      g-suc = {!!}
+
+      g-f : ∀ i → g (f i) ≡ i
+      g-f zero = cong (biEq-rec _ _) (biEq?-refl (predFin (–> p zero)))
+      g-f (suc i) = {!!}
